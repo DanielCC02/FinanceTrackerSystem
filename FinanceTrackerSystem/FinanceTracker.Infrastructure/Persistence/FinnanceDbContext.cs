@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FinanceTracker.Domain.Entities;
 using FinanceTracker.Domain.Common;
+using FinanceTracker.Application.Interfaces;
 
 namespace FinanceTracker.Infrastructure.Persistence;
 
-public class FinanceDbContext : DbContext
+public class FinanceDbContext : DbContext, IApplicationDbContext
 {
     public FinanceDbContext(DbContextOptions<FinanceDbContext> options)
         : base(options)
@@ -20,12 +21,10 @@ public class FinanceDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // 🔥 Apply all configurations automatically
-        modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(FinanceDbContext).Assembly
-        );
+        // Apply all configurations automatically
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(FinanceDbContext).Assembly);
 
-        // 🔥 Soft Delete Global Filter
+        // Soft Delete Global Filter
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
@@ -45,14 +44,6 @@ public class FinanceDbContext : DbContext
         modelBuilder.Entity<TEntity>()
             .HasQueryFilter(e => !e.IsDeleted);
     }
-
-    // 🔥 Auditing
-    public override int SaveChanges()
-    {
-        ApplyAuditing();
-        return base.SaveChanges();
-    }
-
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ApplyAuditing();
