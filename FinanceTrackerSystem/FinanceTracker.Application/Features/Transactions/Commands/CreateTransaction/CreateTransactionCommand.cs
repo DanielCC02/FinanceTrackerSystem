@@ -12,7 +12,4 @@ namespace FinanceTracker.Application.Features.Transactions.Commands.CreateTransa
     string Description,
     DateTime Date
     ) : IRequest<Guid>;
-    
-
-   
 }
