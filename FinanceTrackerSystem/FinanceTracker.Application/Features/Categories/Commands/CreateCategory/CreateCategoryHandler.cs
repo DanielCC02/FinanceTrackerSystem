@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace FinanceTracker.Application.Features.Transactions.Commands.CreateCategory
+namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
 {
     public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid>
     {
