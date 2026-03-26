@@ -1,4 +1,5 @@
-﻿using FinanceTracker.Application.Features.Transactions.Commands.CreateUser;
+﻿using FinanceTracker.Application.Features.Users.Commands.CreateUser;
+using FinanceTracker.Application.Features.Users.Queries.GetUserById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,8 +19,15 @@ namespace FinanceTracker.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserCommand command)
         {
-            var id = await _mediator.Send(command);
-            return Ok(id);
+            var result = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _mediator.Send(new GetUserByIdQuery(id));
+            return Ok(result);
         }
     }
 }

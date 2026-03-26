@@ -18,18 +18,21 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(150)
             .IsRequired();
 
+        entity.HasIndex(u => u.Email)
+            .IsUnique();
+
         entity.Property(u => u.PasswordHash)
             .IsRequired();
 
-        // Relationships
+       
         entity.HasMany(u => u.Accounts)
             .WithOne(a => a.User)
             .HasForeignKey(a => a.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         entity.HasMany(u => u.Categories)
             .WithOne(c => c.User)
             .HasForeignKey(c => c.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

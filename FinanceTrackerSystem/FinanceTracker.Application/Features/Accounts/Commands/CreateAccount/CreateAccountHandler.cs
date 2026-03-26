@@ -4,7 +4,7 @@ using FinanceTracker.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceTracker.Application.Features.Transactions.Commands.CreateAccount
+namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
 {
     public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Guid>
     {

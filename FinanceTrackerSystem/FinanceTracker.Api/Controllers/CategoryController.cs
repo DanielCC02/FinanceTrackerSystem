@@ -1,4 +1,4 @@
-﻿using FinanceTracker.Application.Features.Transactions.Commands.CreateCategory;
+﻿using FinanceTracker.Application.Features.Categories.Commands.CreateCategory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

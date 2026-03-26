@@ -1,6 +1,8 @@
 using FinanceTracker.Application.Features.Transactions.Commands.CreateTransaction;
+using FinanceTracker.Application.Features.Users.Mapping;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Infrastructure.Persistence;
+using FinanceTracker.Infrastructure.Service.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +20,11 @@ builder.Services.AddDbContext<FinanceDbContext>(options =>
         builder.Configuration.GetConnectionString("ConnectionFinance")));
 
 builder.Services.AddScoped<IApplicationDbContext, FinanceDbContext>();
+builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+
+//Mapping
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddMediatR(cfg =>
 {
@@ -26,7 +33,6 @@ builder.Services.AddMediatR(cfg =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

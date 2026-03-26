@@ -1,4 +1,4 @@
-﻿using FinanceTracker.Application.Features.Transactions.Commands.CreateAccount;
+﻿using FinanceTracker.Application.Features.Accounts.Commands.CreateAccount;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -2,7 +2,7 @@
 using MediatR;
 
 
-namespace FinanceTracker.Application.Features.Transactions.Commands.CreateAccount
+namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
 {
     public record CreateAccountCommand
     (

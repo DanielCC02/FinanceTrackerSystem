@@ -164,6 +164,9 @@ namespace FinanceTracker.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
@@ -172,7 +175,7 @@ namespace FinanceTracker.Infrastructure.Migrations
                     b.HasOne("FinanceTracker.Domain.Entities.User", "User")
                         .WithMany("Accounts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -183,7 +186,7 @@ namespace FinanceTracker.Infrastructure.Migrations
                     b.HasOne("FinanceTracker.Domain.Entities.User", "User")
                         .WithMany("Categories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
