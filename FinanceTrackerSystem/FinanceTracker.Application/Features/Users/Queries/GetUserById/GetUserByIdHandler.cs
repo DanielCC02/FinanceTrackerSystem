@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FinanceTracker.Application.Features.Users.Queries.GetUsers;
+using FinanceTracker.Application.Features.Users.DTOs;
 using FinanceTracker.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
