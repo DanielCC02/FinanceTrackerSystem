@@ -1,4 +1,4 @@
-﻿namespace FinanceTracker.Application.Features.Users.Queries.GetUsers
+﻿namespace FinanceTracker.Application.Features.Users.DTOs
 {
     public class UserDto
     {

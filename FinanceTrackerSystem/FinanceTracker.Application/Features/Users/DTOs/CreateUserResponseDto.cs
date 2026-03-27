@@ -1,4 +1,4 @@
-﻿namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
+﻿namespace FinanceTracker.Application.Features.Users.DTOs
 {
     public class CreateUserResponseDto
     {
