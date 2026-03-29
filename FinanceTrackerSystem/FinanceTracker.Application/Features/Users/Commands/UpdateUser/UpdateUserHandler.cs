@@ -9,42 +9,30 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUser
     public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, UserDto>
     {
         private readonly IApplicationDbContext _dbContext;
-        private readonly IPasswordHasher _passwordHasher;
         private readonly IMapper _mapper;
 
-        public UpdateUserHandler(IApplicationDbContext dbContext, IMapper mapper, IPasswordHasher passwordHasher)
+        public UpdateUserHandler(IApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _passwordHasher = passwordHasher;
         }
 
         public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
+                .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
+                ?? throw new Exception("User not found");
 
-            if (user == null)
-                throw new Exception("User not found");
-            
             if (user.IsDeleted)
                 throw new Exception("User is deleted");
 
             var emailExists = await _dbContext.Users
-                .AnyAsync(a => a.Email == request.email && a.Id != request.Id, cancellationToken);
+                .AnyAsync(u => u.Email == request.Email && u.Id != request.Id, cancellationToken);
 
-            if(emailExists)
-                throw new Exception("Email already exists");
+            if (emailExists)
+                throw new Exception("Email is already in use");
 
-            user.GetType().GetProperty("Name")!.SetValue(user, request.name);
-            user.GetType().GetProperty("Email")!.SetValue(user, request.email);
-
-            if (!string.IsNullOrWhiteSpace(request.password))
-            {
-                var passwordHash = _passwordHasher.HashPassword(request.password);
-                user.GetType().GetProperty("PasswordHash")!.SetValue(user, passwordHash);
-
-            }
+            user.Update(request.Name, request.Email);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
