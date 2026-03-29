@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
 {
-    public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserResponseDto>
+    public class CreateUserHandler : IRequestHandler<CreateUserCommand, UserDto>
     {
         private readonly IApplicationDbContext _dbContext;
 
@@ -22,7 +22,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
             _mapper = mapper;
         }
 
-        public async Task<CreateUserResponseDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
             var emailExists = await _dbContext.Users
                 .AnyAsync(u => u.Email == request.Email, cancellationToken);
@@ -42,7 +42,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<CreateUserResponseDto>(user);
+            return _mapper.Map<UserDto>(user);
         }
     }
 }

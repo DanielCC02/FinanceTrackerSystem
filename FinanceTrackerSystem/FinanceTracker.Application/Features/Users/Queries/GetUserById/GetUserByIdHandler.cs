@@ -23,10 +23,8 @@ namespace FinanceTracker.Application.Features.Users.Queries.GetUserById
         public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
-
-            if (user == null)
-                throw new Exception("User not found");
+                .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken)
+                ?? throw new Exception("User not found"); 
 
             return _mapper.Map<UserDto>(user);
         }

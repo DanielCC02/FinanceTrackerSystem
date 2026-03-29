@@ -1,4 +1,6 @@
-﻿using FinanceTracker.Application.Interfaces;
+﻿using AutoMapper;
+using FinanceTracker.Application.Features.Accounts.DTOs;
+using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Domain.Entities;
 using FinanceTracker.Domain.Enums;
 using MediatR;
@@ -6,16 +8,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
 {
-    public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Guid>
+    public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, AccountDto>
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public CreateAccountHandler(IApplicationDbContext dbContext)
+        public CreateAccountHandler(IApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public async Task<Guid> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+        public async Task<AccountDto> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             var userExists = await _dbContext.Users
                 .AnyAsync(u => u.Id == request.UserId, cancellationToken);
@@ -29,9 +33,10 @@ namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
                 request.Type);
 
             _dbContext.Accounts.Add(account);
+
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return account.Id;
+            return _mapper.Map<AccountDto>(account);
 
         }
     }

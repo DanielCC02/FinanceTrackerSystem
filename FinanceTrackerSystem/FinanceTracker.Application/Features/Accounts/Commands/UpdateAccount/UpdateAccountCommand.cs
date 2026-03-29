@@ -3,11 +3,11 @@ using FinanceTracker.Domain.Enums;
 using MediatR;
 
 
-namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
+namespace FinanceTracker.Application.Features.Accounts.Commands.UpdateAccount
 {
-    public record CreateAccountCommand
+    public record UpdateAccountCommand
     (
-        Guid UserId,
+        Guid Id,
         string Name,
         AccountType Type
     ) : IRequest<AccountDto>;
