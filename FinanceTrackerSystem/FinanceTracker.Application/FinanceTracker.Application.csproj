@@ -17,8 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Transactions\DTOs\" />
-    <Folder Include="Features\Transactions\Mapping\" />
     <Folder Include="Features\Transactions\Queries\" />
   </ItemGroup>
 

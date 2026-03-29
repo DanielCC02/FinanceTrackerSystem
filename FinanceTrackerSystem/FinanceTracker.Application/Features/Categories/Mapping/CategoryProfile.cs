@@ -8,7 +8,9 @@ namespace FinanceTracker.Application.Features.Categories.Mapping
     {
         public CategoryProfile()
         {
-            CreateMap<Category, CategoryDto>();
+            CreateMap<Category, CategoryDto>()
+                .ForMember(dest => dest.Type,
+                    opt => opt.MapFrom(src => src.Type.ToString()));
         }
     }
 }
