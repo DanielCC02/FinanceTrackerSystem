@@ -20,9 +20,45 @@ public class Account : BaseEntity
     public Account(Guid userId, string name, AccountType type)
     {
         Id = Guid.NewGuid();
-        UserId = userId;
-        Name = name;
-        Type = type;
+        SetUserId(userId);
+        SetName(name);
+        SetType(type);
         CreatedAt = DateTime.UtcNow;
+    }
+
+    public void Update(string name, AccountType type)
+    {
+        SetName(name);
+        SetType(type);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Delete()
+    {
+        if (IsDeleted)
+            throw new InvalidOperationException("Account already deleted");
+
+        IsDeleted = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
+    private void SetUserId(Guid userId)
+    {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("UserId cannot be empty");
+        UserId = userId;
+    }
+
+    private void SetName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name cannot be empty");
+        Name = name;
+    }
+
+    private void SetType(AccountType type)
+    {
+        if (!Enum.IsDefined(typeof(AccountType), type))
+            throw new ArgumentException("Invalid account type");
+        Type = type;
     }
 }

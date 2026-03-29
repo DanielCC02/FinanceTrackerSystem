@@ -1,4 +1,6 @@
-﻿using FinanceTracker.Application.Interfaces;
+﻿using AutoMapper;
+using FinanceTracker.Application.Features.Categories.DTOs;
+using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -6,16 +8,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
 {
-    public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid>
+    public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
         public CreateCategoryHandler(IApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<Guid> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var userExists = await _dbContext.Users
                 .AnyAsync(u => u.Id == request.UserId, cancellationToken);
@@ -31,7 +34,7 @@ namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
             _dbContext.Categories.Add(category);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return category.Id;
+            return _mapper.Map<CategoryDto>(category);
         }
     }
 }

@@ -17,7 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Users\Queries\GetUsers\" />
+    <Folder Include="Features\Transactions\DTOs\" />
+    <Folder Include="Features\Transactions\Mapping\" />
+    <Folder Include="Features\Transactions\Queries\" />
   </ItemGroup>
 
 </Project>

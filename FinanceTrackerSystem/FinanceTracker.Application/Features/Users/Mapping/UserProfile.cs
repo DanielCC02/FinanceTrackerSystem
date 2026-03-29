@@ -9,8 +9,6 @@ namespace FinanceTracker.Application.Features.Users.Mapping
         public UserProfile()
         {
             CreateMap<User, UserDto>();
-
-            CreateMap<User, CreateUserResponseDto>();
         }
     }
 }

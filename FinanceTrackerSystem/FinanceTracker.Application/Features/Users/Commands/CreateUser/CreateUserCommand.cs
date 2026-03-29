@@ -8,5 +8,5 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
         string Name,
         string Email,
         string Password
-    ) : IRequest<CreateUserResponseDto>;
+    ) : IRequest<UserDto>;
 }
