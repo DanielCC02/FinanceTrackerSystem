@@ -8,7 +8,9 @@ namespace FinanceTracker.Application.Features.Accounts.Mapping
     {
         public AccountProfile()
         {
-            CreateMap<Account, AccountDto>();
+            CreateMap<Account, AccountDto>()
+                .ForMember(dest => dest.Type,
+                    opt => opt.MapFrom(src => src.Type.ToString())); ;
         }
     }
 }
