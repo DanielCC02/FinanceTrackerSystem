@@ -21,10 +21,7 @@ namespace FinanceTracker.Application.Features.Accounts.Commands.UpdateAccount
         {
             var account = await _dbContext.Accounts
                 .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken)
-                ?? throw new Exception("Account not found");
-
-            if(account.IsDeleted)
-                throw new Exception("Account is deleted");
+                ?? throw new KeyNotFoundException("Account not found");
             
             account.Update(request.Name, request.Type);
 

@@ -1,6 +1,4 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using FinanceTracker.Application.Features.Transactions.DTOs;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Domain.Entities;
@@ -27,31 +25,27 @@ namespace FinanceTracker.Application.Features.Transactions.Commands.CreateTransa
                 .AnyAsync(a => a.Id == request.AccountId, cancellationToken);
 
             if (!accountExists)
-                throw new Exception("Account not found");
+                throw new KeyNotFoundException("Account not found");
 
             if (request.CategoryId.HasValue)
             {
                 var categoryExists = await _dbContext.Categories
-                    .AnyAsync(b => b.Id == request.CategoryId.Value, cancellationToken);
+                    .AnyAsync(c => c.Id == request.CategoryId.Value, cancellationToken);
 
                 if (!categoryExists) 
-                    throw new Exception("Category not found");
-            }
-
-            if (!Enum.IsDefined(typeof(TransactionType), request.Type))
-                throw new Exception("Invalid transaction type");
-
-            var type = (TransactionType)request.Type;
+                    throw new KeyNotFoundException("Category not found");
+            }            
 
             var transaction = new Transaction(
                 request.AccountId,
                 request.CategoryId,
                 request.Amount,
-                type,
+                request.Type,
                 request.Description,
                 request.Date);
 
             _dbContext.Transactions.Add(transaction);
+
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<TransactionDto>(transaction);

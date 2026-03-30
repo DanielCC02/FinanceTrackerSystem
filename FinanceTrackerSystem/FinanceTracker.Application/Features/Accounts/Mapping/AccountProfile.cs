@@ -10,7 +10,7 @@ namespace FinanceTracker.Application.Features.Accounts.Mapping
         {
             CreateMap<Account, AccountDto>()
                 .ForMember(dest => dest.Type,
-                    opt => opt.MapFrom(src => src.Type.ToString())); ;
+                    opt => opt.MapFrom(src => src.Type.ToString()));
         }
     }
 }

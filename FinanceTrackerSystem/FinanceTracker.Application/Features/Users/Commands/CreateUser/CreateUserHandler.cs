@@ -24,8 +24,10 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
 
         public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
+            var normalizedEmail = request.Email.Trim().ToLower();
+
             var emailExists = await _dbContext.Users
-                .AnyAsync(u => u.Email == request.Email, cancellationToken);
+                .AnyAsync(u => u.Email == normalizedEmail, cancellationToken);
 
             if (emailExists)
             {
@@ -36,7 +38,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
 
             var user = new User(
                 request.Name,
-                request.Email,
+                normalizedEmail,
                 passwordHash);
 
             _dbContext.Users.Add(user);

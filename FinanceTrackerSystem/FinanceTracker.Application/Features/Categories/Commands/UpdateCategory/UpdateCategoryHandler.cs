@@ -22,12 +22,9 @@ namespace FinanceTracker.Application.Features.Categories.Commands.UpdateCategory
         {
             var category = await _dbContext.Categories
                 .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken)
-                ?? throw new Exception("Category not found");
+                ?? throw new KeyNotFoundException("Category not found");
 
-            if(category.IsDeleted)
-                throw new Exception("Category is deleted");
-
-            category.Update(request.name, request.type);
+            category.Update(request.Name, request.Type);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

@@ -1,11 +1,6 @@
 ﻿using FinanceTracker.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword
 {
@@ -24,14 +19,11 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword
         {
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
-                ?? throw new Exception("User not found");
+                ?? throw new KeyNotFoundException("User not found");            
 
-            if (user.IsDeleted)
-               throw new Exception("User is deleted");
+            var hashedPassword = _passwordHasher.HashPassword(request.Password);
 
-            var HashedPassword = _passwordHasher.HashPassword(request.Password);
-
-            user.UpdatePassword(HashedPassword);
+            user.UpdatePassword(hashedPassword);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

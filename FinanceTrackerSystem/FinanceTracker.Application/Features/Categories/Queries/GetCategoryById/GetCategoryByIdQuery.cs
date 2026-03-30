@@ -3,7 +3,7 @@ using MediatR;
 
 namespace FinanceTracker.Application.Features.Categories.Queries.GetCategoryById
 {
-    public record GetCategoryById
+    public record GetCategoryByIdQuery
     (
         Guid Id
     ) : IRequest<CategoryDto>;
