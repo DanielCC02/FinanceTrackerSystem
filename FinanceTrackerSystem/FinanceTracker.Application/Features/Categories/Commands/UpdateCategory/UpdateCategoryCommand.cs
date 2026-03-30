@@ -8,7 +8,7 @@ namespace FinanceTracker.Application.Features.Categories.Commands.UpdateCategory
     public record UpdateCategoryCommand
     (
         Guid Id,
-        string name,
-        CategoryType type
+        string Name,
+        CategoryType Type
     ) : IRequest<CategoryDto>;
 }

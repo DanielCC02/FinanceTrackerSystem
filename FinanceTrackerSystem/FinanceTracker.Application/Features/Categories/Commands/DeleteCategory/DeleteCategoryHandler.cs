@@ -17,7 +17,7 @@ namespace FinanceTracker.Application.Features.Categories.Commands.DeleteCategory
         {
             var category = await _dbContext.Categories
                 .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken)
-                ?? throw new Exception("Category not found");
+                ?? throw new KeyNotFoundException("Category not found");
 
             category.Delete();
 

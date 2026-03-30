@@ -18,7 +18,16 @@ namespace FinanceTracker.Application.Features.Accounts.Commands.DeleteAccount
         {
             var account = await _dbContext.Accounts
                 .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken)
-                ?? throw new Exception("Account not found");
+                ?? throw new KeyNotFoundException("Account not found");
+
+            var transactions = await _dbContext.Transactions
+            .Where(t => t.AccountId == account.Id)
+            .ToListAsync(cancellationToken);
+
+            foreach (var transaction in transactions)
+            {
+                transaction.Delete();
+            }
 
             account.Delete();
 

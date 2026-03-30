@@ -2,7 +2,6 @@
 using FinanceTracker.Application.Features.Accounts.DTOs;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Domain.Entities;
-using FinanceTracker.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +24,7 @@ namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
                 .AnyAsync(u => u.Id == request.UserId, cancellationToken);
 
             if (!userExists)
-                throw new Exception("User not found.");
+                throw new KeyNotFoundException("User not found.");
 
             var account = new Account(
                 request.UserId,

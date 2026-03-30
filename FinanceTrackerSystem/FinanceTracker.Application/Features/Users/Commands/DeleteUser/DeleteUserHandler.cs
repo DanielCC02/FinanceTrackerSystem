@@ -16,10 +16,28 @@ namespace FinanceTracker.Application.Features.Users.Commands.DeleteUser
         public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
+                .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
+                ?? throw new KeyNotFoundException("User not found");
 
-            if (user == null)
-                throw new Exception("User not found");
+            var accounts = await _dbContext.Accounts
+                .Where(a => a.UserId == user.Id)
+                .ToListAsync(cancellationToken);
+
+            var accountIds = accounts.Select(a => a.Id).ToList();
+
+            var transactions = await _dbContext.Transactions
+                .Where(t => accountIds.Contains(t.AccountId))
+                .ToListAsync(cancellationToken);
+
+            foreach (var transaction in transactions)
+            {
+                transaction.Delete();
+            }
+
+            foreach (var account in accounts)
+            {
+                account.Delete();
+            }
 
             user.Delete();
 

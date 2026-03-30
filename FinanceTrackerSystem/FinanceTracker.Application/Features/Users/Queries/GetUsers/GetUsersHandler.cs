@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceTracker.Application.Features.Users.Queries.GetUsers
 {
-    public class GetUserHandler : IRequestHandler<GetUsersQuery, List<UserDto>>
+    public class GetUsersHandler : IRequestHandler<GetUsersQuery, List<UserDto>>
     {
         private readonly IApplicationDbContext _dbContext;
 
         private readonly IMapper _mapper;
 
-        public GetUserHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public GetUsersHandler(IApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

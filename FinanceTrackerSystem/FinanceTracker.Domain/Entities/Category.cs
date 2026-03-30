@@ -1,6 +1,5 @@
 ﻿using FinanceTracker.Domain.Common;
 using FinanceTracker.Domain.Enums;
-using System.Globalization;
 
 namespace FinanceTracker.Domain.Entities;
 

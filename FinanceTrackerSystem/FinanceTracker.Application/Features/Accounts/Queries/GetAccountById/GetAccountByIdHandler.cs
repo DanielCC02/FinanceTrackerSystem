@@ -1,6 +1,7 @@
 ﻿
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FinanceTracker.Application.Features.Accounts.DTOs;
 using FinanceTracker.Application.Interfaces;
 using MediatR;
@@ -22,11 +23,10 @@ namespace FinanceTracker.Application.Features.Accounts.Queries.GetAccountById
         public async Task<AccountDto> Handle(GetAccountByIdQuery request, CancellationToken cancellationToken)
         {
             var account = await _dbContext.Accounts
-                .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken)
-                ?? throw new Exception("Account not found");
-
-            if (account.IsDeleted)
-                throw new Exception("Account is deleted");
+                .Where(a => a.Id == request.Id)
+                .ProjectTo<AccountDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new KeyNotFoundException("Account not found.");
 
             return _mapper.Map<AccountDto>(account);
         }

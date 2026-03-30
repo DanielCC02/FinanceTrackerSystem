@@ -1,5 +1,4 @@
-﻿using FinanceTracker.Application.Features.Users.DTOs;
-using MediatR;
+﻿using MediatR;
 
 namespace FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword
 {

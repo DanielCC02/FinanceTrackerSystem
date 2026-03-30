@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FinanceTracker.Application.Features.Users.DTOs;
 using FinanceTracker.Application.Interfaces;
 using MediatR;
@@ -23,8 +24,10 @@ namespace FinanceTracker.Application.Features.Users.Queries.GetUserById
         public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken)
-                ?? throw new Exception("User not found"); 
+                .Where(u => u.Id == request.Id)
+                .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new KeyNotFoundException("User not found.");
 
             return _mapper.Map<UserDto>(user);
         }

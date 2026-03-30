@@ -29,9 +29,8 @@ public class Transaction : BaseEntity
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void Update(Guid accountId, Guid? categoryId, decimal amount, TransactionType type, string description, DateTime date)
+    public void Update(Guid? categoryId, decimal amount, TransactionType type, string description, DateTime date)
     {
-        SetAccountId(accountId);
         SetCategoryId(categoryId);
         SetAmount(amount);
         SetType(type);

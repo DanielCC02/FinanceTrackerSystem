@@ -1,13 +1,15 @@
 ﻿
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FinanceTracker.Application.Features.Categories.DTOs;
 using FinanceTracker.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinanceTracker.Application.Features.Categories.Queries.GetCategoryById
 {
-    public class GetCategoryByIdHandler : IRequestHandler<GetCategoryById, CategoryDto>
+    public class GetCategoryByIdHandler : IRequestHandler<GetCategoryByIdQuery, CategoryDto>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -18,10 +20,13 @@ namespace FinanceTracker.Application.Features.Categories.Queries.GetCategoryById
             _mapper = mapper;
         }
 
-        public async Task<CategoryDto> Handle(GetCategoryById request, CancellationToken cancellationToken)
+        public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
-            var category = await _dbContext.Categories.FindAsync(new object[] { request.Id }, cancellationToken)
-                ?? throw new Exception("Category not found");
+            var category = await _dbContext.Categories
+                .Where(c => c.Id == request.Id)
+                .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new KeyNotFoundException("Category not found.");
 
             return _mapper.Map<CategoryDto>(category);
         }
