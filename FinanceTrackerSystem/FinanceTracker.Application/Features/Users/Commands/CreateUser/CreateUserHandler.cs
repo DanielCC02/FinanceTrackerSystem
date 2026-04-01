@@ -39,6 +39,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
             var user = new User(
                 request.Name,
                 normalizedEmail,
+                request.Role,
                 passwordHash);
 
             _dbContext.Users.Add(user);

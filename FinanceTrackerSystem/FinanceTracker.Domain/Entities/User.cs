@@ -1,4 +1,5 @@
 ﻿using FinanceTracker.Domain.Common;
+using FinanceTracker.Domain.Enums;
 
 namespace FinanceTracker.Domain.Entities;
 
@@ -6,6 +7,7 @@ public class User : BaseEntity
 {
     public string Name { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
+    public UserRole Role { get; private set; }
     public string PasswordHash { get; private set; } = string.Empty;
 
     public ICollection<Account> Accounts { get; private set; } = new List<Account>();
@@ -13,11 +15,12 @@ public class User : BaseEntity
 
     private User() { }
 
-    public User(string name, string email, string passwordHash)
+    public User(string name, string email, UserRole role, string passwordHash)
     {
         Id = Guid.NewGuid();
         SetName(name);
         SetEmail(email);
+        SetRole(role);
         SetPassword(passwordHash);
         CreatedAt = DateTime.UtcNow;
     }
@@ -44,6 +47,15 @@ public class User : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void ChangeRole(UserRole newRole)
+    {
+        if (Role == newRole)
+            throw new InvalidOperationException("User already has this role");
+
+        Role = newRole;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     // VALIDACIONES INTERNAS
 
     private void SetName(string name)
@@ -60,6 +72,14 @@ public class User : BaseEntity
             throw new ArgumentException("Email cannot be empty");
 
         Email = email.Trim().ToLower();
+    }
+
+    private void SetRole(UserRole role)
+    {
+        if (!Enum.IsDefined(typeof(UserRole), role))
+        throw new ArgumentException("Invalid user role.");
+
+        Role = role;
     }
 
     private void SetPassword(string passwordHash)
