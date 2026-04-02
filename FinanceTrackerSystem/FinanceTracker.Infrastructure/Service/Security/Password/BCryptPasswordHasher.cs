@@ -1,7 +1,7 @@
 ﻿using FinanceTracker.Application.Interfaces;
 
 
-namespace FinanceTracker.Infrastructure.Service.Security
+namespace FinanceTracker.Infrastructure.Service.Security.Password
 {
     public class BCryptPasswordHasher : IPasswordHasher
     {
