@@ -20,8 +20,8 @@ public class User : BaseEntity
         Id = Guid.NewGuid();
         SetName(name);
         SetEmail(email);
-        SetRole(role);
-        SetPassword(passwordHash);
+        SetRole(UserRole.User);
+        SetPasswordHash(passwordHash);
         CreatedAt = DateTime.UtcNow;
     }
 
@@ -34,7 +34,7 @@ public class User : BaseEntity
 
     public void UpdatePassword(string passwordHash)
     {
-        SetPassword(passwordHash);
+        SetPasswordHash(passwordHash);
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -52,7 +52,7 @@ public class User : BaseEntity
         if (Role == newRole)
             throw new InvalidOperationException("User already has this role");
 
-        Role = newRole;
+        SetRole(newRole);
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -71,6 +71,9 @@ public class User : BaseEntity
         if (string.IsNullOrWhiteSpace(email))
             throw new ArgumentException("Email cannot be empty");
 
+        if (!email.Contains('@'))
+            throw new ArgumentException("Invalid email format");
+
         Email = email.Trim().ToLower();
     }
 
@@ -82,10 +85,13 @@ public class User : BaseEntity
         Role = role;
     }
 
-    private void SetPassword(string passwordHash)
+    private void SetPasswordHash(string passwordHash)
     {
         if (string.IsNullOrWhiteSpace(passwordHash))
             throw new ArgumentException("Password cannot be empty");
+
+        if (passwordHash.Length < 10)
+            throw new ArgumentException("Invalid password hash");
 
         PasswordHash = passwordHash;
     }
