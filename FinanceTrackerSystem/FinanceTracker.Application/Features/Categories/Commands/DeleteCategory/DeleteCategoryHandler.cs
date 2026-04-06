@@ -7,16 +7,18 @@ namespace FinanceTracker.Application.Features.Categories.Commands.DeleteCategory
     public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, Unit>
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly ICurrentUserService _currentUser;
 
-        public DeleteCategoryHandler(IApplicationDbContext dbContext)
+        public DeleteCategoryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
+            _currentUser = currentUser;
         }
 
         public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await _dbContext.Categories
-                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken)
+                .FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == _currentUser.UserId, cancellationToken)
                 ?? throw new KeyNotFoundException("Category not found");
 
             category.Delete();

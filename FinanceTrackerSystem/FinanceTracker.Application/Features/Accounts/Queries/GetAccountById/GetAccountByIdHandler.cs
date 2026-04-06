@@ -13,17 +13,18 @@ namespace FinanceTracker.Application.Features.Accounts.Queries.GetAccountById
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
-
-        public GetAccountByIdHandler(IApplicationDbContext dbContext, IMapper mapper)
+        private readonly ICurrentUserService _currentUser;
+        public GetAccountByIdHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<AccountDto> Handle(GetAccountByIdQuery request, CancellationToken cancellationToken)
         {
             var account = await _dbContext.Accounts
-                .Where(a => a.Id == request.Id)
+                .Where(a => a.Id == request.Id && a.UserId == _currentUser.UserId)
                 .ProjectTo<AccountDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new KeyNotFoundException("Account not found.");

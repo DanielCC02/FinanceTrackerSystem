@@ -20,9 +20,9 @@ namespace FinanceTracker.Infrastructure.Service.Security.JWT
         {
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.Role, role)
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(ClaimTypes.Email, email),
+            new(ClaimTypes.Role, role)
         };
 
             var key = new SymmetricSecurityKey(
