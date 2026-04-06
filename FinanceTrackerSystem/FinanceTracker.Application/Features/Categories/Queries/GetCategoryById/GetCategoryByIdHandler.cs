@@ -13,17 +13,19 @@ namespace FinanceTracker.Application.Features.Categories.Queries.GetCategoryById
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
-        public GetCategoryByIdHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public GetCategoryByIdHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
             var category = await _dbContext.Categories
-                .Where(c => c.Id == request.Id)
+                .Where(c => c.Id == request.Id && c.UserId == _currentUser.UserId)
                 .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new KeyNotFoundException("Category not found.");

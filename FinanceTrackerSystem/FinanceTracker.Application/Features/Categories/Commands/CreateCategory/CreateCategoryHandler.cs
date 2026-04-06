@@ -12,23 +12,19 @@ namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
-        public CreateCategoryHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public CreateCategoryHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
-        {
-            var userExists = await _dbContext.Users
-                .AnyAsync(u => u.Id == request.UserId, cancellationToken);
-
-            if (!userExists)
-                throw new KeyNotFoundException("User not found.");
-
+        {            
             var category = new Category(
-                request.UserId,
+                _currentUser.UserId,
                 request.Name,
                 request.Type);
 

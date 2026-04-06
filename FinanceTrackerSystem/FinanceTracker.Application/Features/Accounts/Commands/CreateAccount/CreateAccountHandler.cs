@@ -11,23 +11,19 @@ namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
-        public CreateAccountHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public CreateAccountHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<AccountDto> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
-            var userExists = await _dbContext.Users
-                .AnyAsync(u => u.Id == request.UserId, cancellationToken);
-
-            if (!userExists)
-                throw new KeyNotFoundException("User not found.");
-
             var account = new Account(
-                request.UserId,
+                _currentUser.UserId,
                 request.Name,
                 request.Type);
 

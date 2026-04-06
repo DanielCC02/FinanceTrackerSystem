@@ -11,17 +11,19 @@ namespace FinanceTracker.Application.Features.Categories.Commands.UpdateCategory
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
-        public UpdateCategoryHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public UpdateCategoryHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<CategoryDto> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await _dbContext.Categories
-                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken)
+                .FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == _currentUser.UserId, cancellationToken)
                 ?? throw new KeyNotFoundException("Category not found");
 
             category.Update(request.Name, request.Type);
