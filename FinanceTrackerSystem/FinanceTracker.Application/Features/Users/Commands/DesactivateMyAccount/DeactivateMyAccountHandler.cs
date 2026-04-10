@@ -1,31 +1,27 @@
-﻿using FinanceTracker.Application.Interfaces;
+﻿
+
+using FinanceTracker.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceTracker.Application.Features.Users.Commands.DeleteUser
+namespace FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccount
 {
-    public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, Unit>
+    public class DeactivateMyAccountHandler : IRequestHandler<DeactivateMyAccountCommand, Unit>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUser;
 
-        public DeleteUserHandler(IApplicationDbContext dbContext, ICurrentUserService currentUser)
+        public DeactivateMyAccountHandler(IApplicationDbContext dbContext, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _currentUser = currentUser;
         }
 
-        public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeactivateMyAccountCommand request, CancellationToken cancellationToken)
         {
-            if (_currentUser.Role != "Admin")
-                throw new UnauthorizedAccessException("Only admins can delete users");
-
-            if (_currentUser.UserId == request.Id)
-                throw new InvalidOperationException("Admins cannot delete themselves");
-
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
-                ?? throw new KeyNotFoundException("User not found");
+            .FirstOrDefaultAsync(u => u.Id == _currentUser.UserId, cancellationToken)
+            ?? throw new KeyNotFoundException("User not found");
 
             var accounts = await _dbContext.Accounts
                 .Where(a => a.UserId == user.Id)
@@ -47,7 +43,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.DeleteUser
                 account.Delete();
             }
 
-            user.Delete();
+            user.Delete(); // o Deactivate()
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
