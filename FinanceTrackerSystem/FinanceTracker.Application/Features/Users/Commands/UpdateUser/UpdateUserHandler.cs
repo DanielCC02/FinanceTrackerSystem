@@ -10,17 +10,22 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUser
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
-        public UpdateUserHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public UpdateUserHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
+            if (_currentUser.Role != "Admin" && _currentUser.UserId != request.Id)
+                throw new UnauthorizedAccessException("Access denied");
+
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
+                .FirstOrDefaultAsync(u => u.Id == request.Id && (_currentUser.Role == "Admin" || u.Id == _currentUser.UserId), cancellationToken)
                 ?? throw new KeyNotFoundException("User not found");
 
             var normalizedEmail = request.Email.Trim().ToLower();

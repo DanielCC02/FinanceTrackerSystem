@@ -2,6 +2,7 @@
 using FinanceTracker.Application.Features.Users.DTOs;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Domain.Entities;
+using FinanceTracker.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,16 +31,17 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
                 .AnyAsync(u => u.Email == normalizedEmail, cancellationToken);
 
             if (emailExists)
-            {
                 throw new InvalidOperationException("Email already exists.");
-            }
+
+            if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 6)
+                throw new ArgumentException("Password must be at least 6 characters");
 
             var passwordHash = _passwordHasher.HashPassword(request.Password);
 
             var user = new User(
                 request.Name,
                 normalizedEmail,
-                request.Role,
+                UserRole.User,
                 passwordHash);
 
             _dbContext.Users.Add(user);

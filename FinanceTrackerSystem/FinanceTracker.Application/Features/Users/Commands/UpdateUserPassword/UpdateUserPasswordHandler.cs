@@ -19,7 +19,8 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword
         {
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
-                ?? throw new KeyNotFoundException("User not found");            
+                ?? throw new KeyNotFoundException("User not found");      
+            
 
             var hashedPassword = _passwordHasher.HashPassword(request.Password);
 
