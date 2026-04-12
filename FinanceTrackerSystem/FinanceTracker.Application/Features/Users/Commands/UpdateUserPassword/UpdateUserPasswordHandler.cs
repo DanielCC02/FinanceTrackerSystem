@@ -8,17 +8,19 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly ICurrentUserService _currentUser;
 
-        public UpdateUserPasswordHandler(IApplicationDbContext dbContext, IPasswordHasher passwordHasher)
+        public UpdateUserPasswordHandler(IApplicationDbContext dbContext, IPasswordHasher passwordHasher, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
+            _currentUser = currentUser;
         }
 
         public async Task<Unit> Handle(UpdateUserPasswordCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
+                .FirstOrDefaultAsync(u => u.Id == _currentUser.UserId, cancellationToken)
                 ?? throw new KeyNotFoundException("User not found");      
             
 

@@ -1,5 +1,6 @@
 ﻿using FinanceTracker.Application.Features.Users.Commands.CreateUser;
 using FinanceTracker.Application.Features.Users.Commands.DeleteUser;
+using FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccount;
 using FinanceTracker.Application.Features.Users.Commands.UpdateUser;
 using FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword;
 using FinanceTracker.Application.Features.Users.DTOs;
@@ -73,6 +74,14 @@ namespace FinanceTracker.API.Controllers
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             await _mediator.Send(new DeleteUserCommand(id));
+            return NoContent();
+        }
+
+        [HttpPost("deactivate")]
+        [Authorize]
+        public async Task<IActionResult> DeactivateMyAccount(DeactivateMyAccountCommand command)
+        {
+            await _mediator.Send(command);
             return NoContent();
         }
     }
