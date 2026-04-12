@@ -38,7 +38,7 @@ public class User : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void Delete()
+    public void Deactivate()
     {
         if (IsDeleted)
             throw new InvalidOperationException("User already deleted");

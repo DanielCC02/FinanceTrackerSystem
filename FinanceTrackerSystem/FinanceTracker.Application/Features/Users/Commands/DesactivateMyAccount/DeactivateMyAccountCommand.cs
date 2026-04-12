@@ -2,7 +2,8 @@
 
 namespace FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccount
 {
-    public record DesactiveMyAccountCommand
+    public record DeactivateMyAccountCommand
     (
+        string Password
     ) : IRequest<Unit>;
 }

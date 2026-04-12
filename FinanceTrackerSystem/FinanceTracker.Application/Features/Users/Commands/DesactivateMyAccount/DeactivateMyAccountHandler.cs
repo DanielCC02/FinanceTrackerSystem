@@ -9,12 +9,14 @@ namespace FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccoun
     public class DeactivateMyAccountHandler : IRequestHandler<DeactivateMyAccountCommand, Unit>
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly ICurrentUserService _currentUser;
 
-        public DeactivateMyAccountHandler(IApplicationDbContext dbContext, ICurrentUserService currentUser)
+        public DeactivateMyAccountHandler(IApplicationDbContext dbContext, ICurrentUserService currentUser, IPasswordHasher passwordHasher)
         {
             _dbContext = dbContext;
             _currentUser = currentUser;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<Unit> Handle(DeactivateMyAccountCommand request, CancellationToken cancellationToken)
@@ -22,6 +24,13 @@ namespace FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccoun
             var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Id == _currentUser.UserId, cancellationToken)
             ?? throw new KeyNotFoundException("User not found");
+
+            var isValidPassword = _passwordHasher.VerifyPassword(user.PasswordHash, request.Password);
+
+            if (!isValidPassword)
+            {
+                throw new UnauthorizedAccessException("Invalid password");
+            }
 
             var accounts = await _dbContext.Accounts
                 .Where(a => a.UserId == user.Id)
