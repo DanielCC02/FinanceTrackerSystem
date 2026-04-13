@@ -1,6 +1,7 @@
 ﻿using FinanceTracker.Application.Features.Users.Commands.CreateUser;
 using FinanceTracker.Application.Features.Users.Commands.DeleteUser;
 using FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccount;
+using FinanceTracker.Application.Features.Users.Commands.UpdateProfile;
 using FinanceTracker.Application.Features.Users.Commands.UpdateUser;
 using FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword;
 using FinanceTracker.Application.Features.Users.DTOs;
@@ -57,6 +58,14 @@ namespace FinanceTracker.API.Controllers
         }
 
         [Authorize]
+        [HttpPut("me")]
+        public async Task<ActionResult<UserDto>> UpdateProfile(UpdateProfileCommand command)
+        {
+            var updatedUser = await _mediator.Send(command);
+            return Ok(updatedUser);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> UpdateUser(Guid id, UpdateUserCommand command)
         {
@@ -68,8 +77,8 @@ namespace FinanceTracker.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}/password")]
-        public async Task<IActionResult> UpdateUserPassword(Guid id, UpdateUserPasswordCommand command)
+        [HttpPut("me/password")]
+        public async Task<IActionResult> UpdateUserPassword(UpdateUserPasswordCommand command)
         {           
             await _mediator.Send(command);
             return NoContent();
@@ -83,8 +92,8 @@ namespace FinanceTracker.API.Controllers
             return NoContent();
         }
 
-        [HttpPost("deactivate")]
         [Authorize]
+        [HttpDelete("me")]
         public async Task<IActionResult> DeactivateMyAccount(DeactivateMyAccountCommand command)
         {
             await _mediator.Send(command);
