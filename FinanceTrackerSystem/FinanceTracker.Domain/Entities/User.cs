@@ -1,35 +1,47 @@
 ﻿using FinanceTracker.Domain.Common;
+using FinanceTracker.Domain.Entities;
 using FinanceTracker.Domain.Enums;
-
-namespace FinanceTracker.Domain.Entities;
 
 public class User : BaseEntity
 {
-    public string Name { get; private set; } = string.Empty;
+    public string FirstName { get; private set; } = string.Empty;
+    public string LastName { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
+    public string? PhoneNumber { get; private set; }
+
     public UserRole Role { get; private set; }
     public string PasswordHash { get; private set; } = string.Empty;
+
+    public bool EmailConfirmed { get; private set; }
 
     public ICollection<Account> Accounts { get; private set; } = new List<Account>();
     public ICollection<Category> Categories { get; private set; } = new List<Category>();
 
     private User() { }
 
-    public User(string name, string email, UserRole role, string passwordHash)
+    public User(string firstName, string lastName, string email, string passwordHash)
     {
         Id = Guid.NewGuid();
-        SetName(name);
+        SetFirstName(firstName);
+        SetLastName(lastName);
         SetEmail(email);
         SetRole(UserRole.User);
         SetPasswordHash(passwordHash);
+        EmailConfirmed = false;
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void Update(string name, string email)
+    public void UpdateProfile(string firstName, string lastName, string phoneNumber)
     {
-        SetName(name);
-        SetEmail(email);
+        SetFirstName(firstName);
+        SetLastName(lastName);
+        SetPhone(phoneNumber);
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ConfirmEmail()
+    {
+        EmailConfirmed = true;
     }
 
     public void UpdatePassword(string passwordHash)
@@ -56,23 +68,36 @@ public class User : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    // VALIDACIONES INTERNAS
+    // VALIDACIONES
 
-    private void SetName(string name)
+    private void SetFirstName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be empty");
+            throw new ArgumentException("First name required");
 
-        Name = name;
+        FirstName = name;
+    }
+
+    private void SetLastName(string lastName)
+    {
+        if (string.IsNullOrWhiteSpace(lastName))
+            throw new ArgumentException("Last name required");
+
+        LastName = lastName;
+    }
+
+    private void SetPhone(string? phone)
+    {
+        PhoneNumber = phone;
     }
 
     private void SetEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email cannot be empty");
+            throw new ArgumentException("Email required");
 
         if (!email.Contains('@'))
-            throw new ArgumentException("Invalid email format");
+            throw new ArgumentException("Invalid email");
 
         Email = email.Trim().ToLower();
     }
@@ -80,7 +105,7 @@ public class User : BaseEntity
     private void SetRole(UserRole role)
     {
         if (!Enum.IsDefined(typeof(UserRole), role))
-        throw new ArgumentException("Invalid user role.");
+            throw new ArgumentException("Invalid role");
 
         Role = role;
     }
@@ -88,10 +113,7 @@ public class User : BaseEntity
     private void SetPasswordHash(string passwordHash)
     {
         if (string.IsNullOrWhiteSpace(passwordHash))
-            throw new ArgumentException("Password cannot be empty");
-
-        if (passwordHash.Length < 10)
-            throw new ArgumentException("Invalid password hash");
+            throw new ArgumentException("Password required");
 
         PasswordHash = passwordHash;
     }

@@ -52,7 +52,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccoun
                 account.Delete();
             }
 
-            user.Delete(); // o Deactivate()
+            user.Deactivate(); 
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

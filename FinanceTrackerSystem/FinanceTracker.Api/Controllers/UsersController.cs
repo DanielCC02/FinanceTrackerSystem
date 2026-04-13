@@ -4,6 +4,7 @@ using FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccount;
 using FinanceTracker.Application.Features.Users.Commands.UpdateUser;
 using FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword;
 using FinanceTracker.Application.Features.Users.DTOs;
+using FinanceTracker.Application.Features.Users.Queries.GetMyProfile;
 using FinanceTracker.Application.Features.Users.Queries.GetUserById;
 using FinanceTracker.Application.Features.Users.Queries.GetUsers;
 using MediatR;
@@ -14,11 +15,11 @@ namespace FinanceTracker.API.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public UserController(IMediator mediator)
+        public UsersController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -48,6 +49,14 @@ namespace FinanceTracker.API.Controllers
         }
 
         [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDto>> GetMyProfile()
+        {
+            var result = await _mediator.Send(new GetMyProfileQuery());
+            return Ok(result);
+        }
+
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> UpdateUser(Guid id, UpdateUserCommand command)
         {
@@ -61,10 +70,7 @@ namespace FinanceTracker.API.Controllers
         [Authorize]
         [HttpPut("{id}/password")]
         public async Task<IActionResult> UpdateUserPassword(Guid id, UpdateUserPasswordCommand command)
-        {
-            if (id != command.Id)
-                return BadRequest("ID mismatch");
-
+        {           
             await _mediator.Send(command);
             return NoContent();
         }

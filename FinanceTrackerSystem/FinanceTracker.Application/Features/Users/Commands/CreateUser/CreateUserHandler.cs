@@ -39,10 +39,11 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
             var passwordHash = _passwordHasher.HashPassword(request.Password);
 
             var user = new User(
-                request.Name,
+                request.FirstName,
+                request.LastName, 
                 normalizedEmail,
-                UserRole.User,
-                passwordHash);
+                passwordHash
+                );
 
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync(cancellationToken);
