@@ -1,6 +1,7 @@
 using FinanceTracker.Application.Features.Transactions.Commands.CreateTransaction;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Infrastructure.Persistence;
+using FinanceTracker.Infrastructure.Service.Email;
 using FinanceTracker.Infrastructure.Service.Security.JWT;
 using FinanceTracker.Infrastructure.Service.Security.Password;
 using FinanceTracker.Infrastructure.Service.Security.RoleSecurity;
@@ -41,6 +42,13 @@ builder.Services.AddScoped<IApplicationDbContext, FinanceDbContext>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+
+
+builder.Services.Configure<ResendSettings>(
+    builder.Configuration.GetSection("Resend"));
+
+builder.Services.AddHttpClient<IEmailService, ResendEmailService>();
 
 // =========================
 // JWT CONFIG
