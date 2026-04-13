@@ -4,6 +4,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword
 {
     public record UpdateUserPasswordCommand
     (
-        string Password
+        string CurrentPassword,
+        string NewPassword
     ) : IRequest<Unit>;
 }

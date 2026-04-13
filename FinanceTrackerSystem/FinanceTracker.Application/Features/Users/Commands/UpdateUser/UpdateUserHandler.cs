@@ -36,7 +36,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUser
             if (emailExists)
                 throw new Exception("Email is already in use");
 
-            user.Update(request.Name, normalizedEmail);
+            user.UpdateProfile(request.FirstName, request.LastName, normalizedEmail);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

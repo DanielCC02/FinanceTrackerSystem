@@ -6,7 +6,8 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
 {
     public record CreateUserCommand
     (
-        string Name,
+        string FirstName,
+        string LastName,
         string Email,
         UserRole Role,
         string Password

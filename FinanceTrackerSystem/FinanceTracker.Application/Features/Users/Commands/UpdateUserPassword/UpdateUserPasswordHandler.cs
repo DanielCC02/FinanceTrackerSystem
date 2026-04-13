@@ -21,10 +21,14 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUserPassword
         {
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == _currentUser.UserId, cancellationToken)
-                ?? throw new KeyNotFoundException("User not found");      
-            
+                ?? throw new KeyNotFoundException("User not found");
 
-            var hashedPassword = _passwordHasher.HashPassword(request.Password);
+            var isValidPassword = _passwordHasher.VerifyPassword(user.PasswordHash, request.CurrentPassword);
+
+            if (!isValidPassword)
+                throw new UnauthorizedAccessException("Invalid current password");
+
+            var hashedPassword = _passwordHasher.HashPassword(request.NewPassword);
 
             user.UpdatePassword(hashedPassword);
 

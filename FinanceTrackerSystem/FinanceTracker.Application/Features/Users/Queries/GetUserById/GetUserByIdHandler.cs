@@ -18,7 +18,6 @@ namespace FinanceTracker.Application.Features.Users.Queries.GetUserById
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _currentUser = currentUser;
         }
 
         public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)

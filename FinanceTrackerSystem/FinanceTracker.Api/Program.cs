@@ -3,6 +3,7 @@ using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Infrastructure.Persistence;
 using FinanceTracker.Infrastructure.Service.Security.JWT;
 using FinanceTracker.Infrastructure.Service.Security.Password;
+using FinanceTracker.Infrastructure.Service.Security.RoleSecurity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 // =========================
 // SERVICES
 // =========================
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddControllers();
 

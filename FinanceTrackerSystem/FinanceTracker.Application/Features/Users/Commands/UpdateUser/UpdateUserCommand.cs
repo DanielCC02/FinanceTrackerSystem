@@ -6,7 +6,8 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUser
     public record UpdateUserCommand
     (
         Guid Id,
-        string Name,
+        string FirstName,
+        string LastName,
         string Email
     ) : IRequest<UserDto>;
 }
