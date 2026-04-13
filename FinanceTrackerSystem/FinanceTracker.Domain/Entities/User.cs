@@ -16,6 +16,7 @@ public class User : BaseEntity
 
     public ICollection<Account> Accounts { get; private set; } = new List<Account>();
     public ICollection<Category> Categories { get; private set; } = new List<Category>();
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; private set; } = new List<PasswordResetToken>();
 
     private User() { }
 

@@ -9,6 +9,7 @@ namespace FinanceTracker.Application.Interfaces
         DbSet<Account> Accounts { get; }
         DbSet<Category> Categories { get; }
         DbSet<Transaction> Transactions { get; }
+        DbSet<PasswordResetToken> PasswordResetTokens { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
