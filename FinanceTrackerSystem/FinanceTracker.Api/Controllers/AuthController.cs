@@ -1,6 +1,6 @@
-﻿using FinanceTracker.Application.Features.Auth.Commands.Login;
-using FinanceTracker.Application.Features.Users.Commands.ForgotPassword;
-using FinanceTracker.Application.Features.Users.Commands.ResetPassword;
+﻿using FinanceTracker.Application.Features.Auth.Commands.ForgotPassword;
+using FinanceTracker.Application.Features.Auth.Commands.Login;
+using FinanceTracker.Application.Features.Auth.Commands.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

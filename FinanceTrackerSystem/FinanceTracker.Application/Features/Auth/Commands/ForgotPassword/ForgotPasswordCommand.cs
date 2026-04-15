@@ -1,7 +1,6 @@
-﻿
-using MediatR;
+﻿using MediatR;
 
-namespace FinanceTracker.Application.Features.Users.Commands.ForgotPassword
+namespace FinanceTracker.Application.Features.Auth.Commands.ForgotPassword
 {
     public record ForgotPasswordCommand
     (

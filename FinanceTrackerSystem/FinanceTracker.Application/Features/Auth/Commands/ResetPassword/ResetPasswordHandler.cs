@@ -1,8 +1,9 @@
 ﻿using FinanceTracker.Application.Interfaces;
+using FinanceTracker.Infrastructure.Service.Security.Token;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceTracker.Application.Features.Users.Commands.ResetPassword
+namespace FinanceTracker.Application.Features.Auth.Commands.ResetPassword
 {
     public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, Unit>
     {
@@ -17,11 +18,16 @@ namespace FinanceTracker.Application.Features.Users.Commands.ResetPassword
 
         public async Task<Unit> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
+            var hashedToken = TokenGenerator.HashToken(request.Token);
+
             var resetToken = await _dbContext.PasswordResetTokens
-                .FirstOrDefaultAsync(t => t.Token == request.Token, cancellationToken);
+                .FirstOrDefaultAsync(t => t.Token == hashedToken, cancellationToken);
 
             if (resetToken == null || !resetToken.IsValid())
                 throw new Exception("Invalid or expired token");
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 6)
+                throw new ArgumentException("Password must be at least 6 characters");
 
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == resetToken.UserId, cancellationToken) 
@@ -29,8 +35,16 @@ namespace FinanceTracker.Application.Features.Users.Commands.ResetPassword
 
             var newPasswordHash = _passwordHasher.HashPassword(request.NewPassword);
 
+            var allTokens = await _dbContext.PasswordResetTokens
+                .Where(t => t.UserId == user.Id && !t.IsUsed)
+                .ToListAsync(cancellationToken);
+
+            foreach (var t in allTokens)
+            {
+                t.MarkAsUsed();
+            }
+
             user.UpdatePassword(newPasswordHash);
-            resetToken.MarkAsUsed();
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

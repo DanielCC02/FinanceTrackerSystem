@@ -1,11 +1,12 @@
 ﻿using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Domain.Entities;
+using FinanceTracker.Infrastructure.Service.Security.Token;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceTracker.Application.Features.Users.Commands.ForgotPassword
+namespace FinanceTracker.Application.Features.Auth.Commands.ForgotPassword
 {
-    public class ForgotPasswordHandler : IRequestHandler<ForgotPassworddCommand, Unit>
+    public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand, Unit>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IEmailService _emailService;
@@ -16,25 +17,29 @@ namespace FinanceTracker.Application.Features.Users.Commands.ForgotPassword
             _emailService = emailService;
         }
 
-        public async Task<Unit> Handle(ForgotPassworddCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
         {
             var email = request.Email.Trim().ToLower();
 
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken)
-                ?? throw new Exception("User not found");
+                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
-            var oldTokens = _dbContext.PasswordResetTokens
-                .Where(t => t.UserId == user.Id && !t.IsUsed);
+            if (user == null)
+                return Unit.Value;
+
+            var oldTokens = await _dbContext.PasswordResetTokens
+                .Where(t => t.UserId == user.Id && !t.IsUsed)
+                .ToListAsync(cancellationToken);
 
             foreach (var t in oldTokens)
             {
                 t.MarkAsUsed();
             }
 
-            var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            var rawToken = TokenGenerator.GenerateSecureToken();
+            var hashedToken = TokenGenerator.HashToken(rawToken);
 
-            var resetToken = new PasswordResetToken(user.Id, token);
+            var resetToken = new PasswordResetToken(user.Id, hashedToken);
 
             _dbContext.PasswordResetTokens.Add(resetToken);
 
@@ -42,7 +47,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.ForgotPassword
 
             //Email sending logic
 
-            var resetLink = $"https://yourapp.com/reset-password?token={token}"; //Miss the frontend URL
+            var resetLink = $"https://yourapp.com/reset-password?token={Uri.EscapeDataString(rawToken)}";
 
             var htmlContent = $@"
                 <h2>Password Reset</h2>

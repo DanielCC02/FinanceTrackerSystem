@@ -11,7 +11,14 @@ public class PasswordResetTokenConfiguration : IEntityTypeConfiguration<Password
         entity.HasKey(t => t.Id);
 
         entity.Property(t => t.Token)
+            .HasMaxLength(44)
             .IsRequired();
+
+        entity.HasIndex(t => t.Token)
+            .IsUnique()
+            .HasDatabaseName("IX_PasswordResetToken_Token");
+
+        entity.HasIndex(t => t.Expiration);
 
         entity.Property(t => t.Expiration)
             .IsRequired();
@@ -20,7 +27,7 @@ public class PasswordResetTokenConfiguration : IEntityTypeConfiguration<Password
             .IsRequired();
 
         entity.HasOne<User>()
-            .WithMany()
+            .WithMany(u => u.PasswordResetTokens)
             .HasForeignKey(t => t.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
