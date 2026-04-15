@@ -6,13 +6,15 @@ using FinanceTracker.Application.Features.Accounts.Queries.GetAccountById;
 using FinanceTracker.Application.Features.Accounts.Queries.GetAccounts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceTracker.API.Controllers
 {
+    /// <summary>
+    /// Manages user accounts.
+    /// </summary>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [Authorize]
     public class AccountsController : ControllerBase
     {
@@ -23,29 +25,50 @@ namespace FinanceTracker.API.Controllers
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Creates a new account for the authenticated user.
+        /// </summary>
+        /// <param name="command">Account creation data</param>
+        /// <returns>The created account</returns>
         [HttpPost]
-        public async Task<IActionResult> Create(CreateAccountCommand command)
+        [ProducesResponseType(typeof(AccountDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create([FromBody] CreateAccountCommand command)
         {
             var result = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
+        /// <summary>
+        /// Gets all accounts of the authenticated user.
+        /// </summary>
         [HttpGet]
+        [ProducesResponseType(typeof(List<AccountDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<List<AccountDto>>> GetAll()
         {
             var accounts = await _mediator.Send(new GetAccountsQuery());
             return Ok(accounts);
         }
 
+        /// <summary>
+        /// Gets an account by its ID.
+        /// </summary>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AccountDto>> GetById(Guid id)
         {
             var account = await _mediator.Send(new GetAccountByIdQuery(id));
             return Ok(account);
         }
 
+        /// <summary>
+        /// Updates an existing account.
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<AccountDto>> Update(Guid id, UpdateAccountCommand command)
+        [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AccountDto>> Update(Guid id, [FromBody] UpdateAccountCommand command)
         {
             if (id != command.Id)
                 return BadRequest("ID mismatch");
@@ -54,8 +77,11 @@ namespace FinanceTracker.API.Controllers
             return Ok(updated);
         }
 
+        /// <summary>
+        /// Deletes an account (soft delete).
+        /// </summary>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")] // 🔥 solo admin
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _mediator.Send(new AccountDeleteCommand(id));

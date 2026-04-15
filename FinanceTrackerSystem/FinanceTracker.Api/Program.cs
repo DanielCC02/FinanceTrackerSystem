@@ -1,11 +1,16 @@
+using FinanceTracker.API.Middleware;
 using FinanceTracker.Application.Features.Transactions.Commands.CreateTransaction;
+using FinanceTracker.Application.Features.Users.Commands.CreateUser;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Infrastructure.Persistence;
 using FinanceTracker.Infrastructure.Service.Email;
 using FinanceTracker.Infrastructure.Service.Security.JWT;
 using FinanceTracker.Infrastructure.Service.Security.Password;
 using FinanceTracker.Infrastructure.Service.Security.RoleSecurity;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -24,6 +29,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
+
+// =========================
+// FLUENT VALIDATION
+// =========================
+
+builder.Services.AddFluentValidationAutoValidation();
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommand>();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
 // =========================
 // DATABASE
@@ -115,6 +133,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

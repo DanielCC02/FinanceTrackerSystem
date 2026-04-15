@@ -24,7 +24,7 @@ namespace FinanceTracker.Application.Features.Auth.Commands.ResetPassword
                 .FirstOrDefaultAsync(t => t.Token == hashedToken, cancellationToken);
 
             if (resetToken == null || !resetToken.IsValid())
-                throw new Exception("Invalid or expired token");
+                throw new UnauthorizedAccessException("Invalid or expired token");
 
             if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 6)
                 throw new ArgumentException("Password must be at least 6 characters");
