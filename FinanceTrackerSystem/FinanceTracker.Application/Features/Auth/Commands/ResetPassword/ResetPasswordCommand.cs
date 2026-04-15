@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace FinanceTracker.Application.Features.Users.Commands.ResetPassword
+namespace FinanceTracker.Application.Features.Auth.Commands.ResetPassword
 {
     public record ResetPasswordCommand
     (
