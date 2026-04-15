@@ -25,16 +25,13 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
 
         public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var normalizedEmail = request.Email.Trim().ToLower();
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
             var emailExists = await _dbContext.Users
                 .AnyAsync(u => u.Email == normalizedEmail, cancellationToken);
 
             if (emailExists)
-                throw new InvalidOperationException("Email already exists.");
-
-            if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 6)
-                throw new ArgumentException("Password must be at least 6 characters");
+                throw new InvalidOperationException("Email already exists.");            
 
             var passwordHash = _passwordHasher.HashPassword(request.Password);
 
