@@ -11,10 +11,12 @@ namespace FinanceTracker.Application.Features.Users.Validators
                 .NotEmpty().WithMessage("User ID is required");
 
             RuleFor(x => x.FirstName)
-                .NotEmpty().WithMessage("First name is required");
+                .NotEmpty().WithMessage("First name is required")
+                .MaximumLength(100);
 
             RuleFor(x => x.LastName)
-                .NotEmpty().WithMessage("Last name is required");
+                .NotEmpty().WithMessage("Last name is required")
+                .MaximumLength(100);
 
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required")

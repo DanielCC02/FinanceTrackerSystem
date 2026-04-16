@@ -17,6 +17,9 @@ namespace FinanceTracker.Application.Features.Users.Commands.DeleteUser
 
         public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
+            if (_currentUser.UserId == Guid.Empty)
+                throw new UnauthorizedAccessException("User not authenticated");
+
             if (_currentUser.Role != "Admin")
                 throw new UnauthorizedAccessException("Only admins can delete users");
 

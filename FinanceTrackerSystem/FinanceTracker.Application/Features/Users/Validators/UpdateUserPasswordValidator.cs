@@ -17,6 +17,11 @@ namespace FinanceTracker.Application.Features.Users.Validators
                 .Matches("[a-z]").WithMessage("Must contain lowercase letter")
                 .Matches("[0-9]").WithMessage("Must contain a number")
                 .Matches("[^a-zA-Z0-9]").WithMessage("Must contain a special character");
+
+            RuleFor(x => x.ConfirmPassword)
+               .Equal(x => x.NewPassword)
+               .WithMessage("Passwords do not match");
         }
+
     }
 }
