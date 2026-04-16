@@ -18,6 +18,7 @@ namespace FinanceTracker.Application.Features.Auth.Commands.ResetPassword
 
         public async Task<Unit> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
+            
             var hashedToken = TokenGenerator.HashToken(request.Token);
 
             var resetToken = await _dbContext.PasswordResetTokens
@@ -25,9 +26,6 @@ namespace FinanceTracker.Application.Features.Auth.Commands.ResetPassword
 
             if (resetToken == null || !resetToken.IsValid())
                 throw new UnauthorizedAccessException("Invalid or expired token");
-
-            if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 6)
-                throw new ArgumentException("Password must be at least 6 characters");
 
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == resetToken.UserId, cancellationToken) 

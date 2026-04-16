@@ -8,9 +8,9 @@ namespace FinanceTracker.Application.Features.Auth.Commands.Login
 {
     public class LoginHandler : IRequestHandler<LoginCommand, LoginResponseDto>
     {
-        public readonly IApplicationDbContext _dbContext;
-        public readonly IJwtTokenService _jwtService;
-        public readonly IPasswordHasher _passwordHasher;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly IJwtTokenService _jwtService;
+        private readonly IPasswordHasher _passwordHasher;
 
         public LoginHandler(IApplicationDbContext dbContext, IJwtTokenService jwtService, IPasswordHasher passwordHasher)
         {
@@ -21,15 +21,16 @@ namespace FinanceTracker.Application.Features.Auth.Commands.Login
 
         public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var email = request.Email.Trim().ToLower();
+            var email = request.Email.Trim().ToLowerInvariant();
 
-            var user = await _dbContext.Users.
-                FirstOrDefaultAsync(u => u.Email == email, cancellationToken)
-                ?? throw new KeyNotFoundException("Invalid credentials");
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
-            var valid = _passwordHasher.VerifyPassword(user.PasswordHash, request.Password);
+            var passwordHash = user?.PasswordHash ?? "$2a$11$invalidhashplaceholder";
 
-            if(!valid)
+            var valid = _passwordHasher.VerifyPassword(passwordHash, request.Password);
+
+            if (user == null || !valid || user.IsDeleted)
                 throw new KeyNotFoundException("Invalid credentials");
 
             var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role.ToString());
