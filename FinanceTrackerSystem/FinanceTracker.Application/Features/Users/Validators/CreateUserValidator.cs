@@ -16,7 +16,6 @@ namespace FinanceTracker.Application.Features.Users.Validators
             RuleFor(x => x.Email)
                  .NotEmpty().WithMessage("Email is required")
                  .EmailAddress().WithMessage("Invalid email format")
-                 .Must(email => email == email.Trim())
                  .WithMessage("Email cannot contain spaces");
 
             RuleFor(x => x.Password)
