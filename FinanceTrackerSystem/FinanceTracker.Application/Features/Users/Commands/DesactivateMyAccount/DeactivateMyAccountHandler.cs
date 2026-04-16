@@ -21,9 +21,15 @@ namespace FinanceTracker.Application.Features.Users.Commands.DesactivateMyAccoun
 
         public async Task<Unit> Handle(DeactivateMyAccountCommand request, CancellationToken cancellationToken)
         {
+            if (_currentUser.UserId == Guid.Empty)
+                throw new UnauthorizedAccessException("User not authenticated");
+
             var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Id == _currentUser.UserId, cancellationToken)
             ?? throw new KeyNotFoundException("User not found");
+
+            if (user.IsDeleted)
+                throw new UnauthorizedAccessException("User is inactive");
 
             var isValidPassword = _passwordHasher.VerifyPassword(user.PasswordHash, request.Password);
 

@@ -21,20 +21,26 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUser
 
         public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            if (_currentUser.Role != "Admin" && _currentUser.UserId != request.Id)
+            if (_currentUser.UserId == Guid.Empty)
+                throw new UnauthorizedAccessException("User not authenticated");
+
+            var isAdmin = _currentUser.Role == "Admin";
+            var isOwner = _currentUser.UserId == request.Id;
+
+            if (!isAdmin && !isOwner)
                 throw new UnauthorizedAccessException("Access denied");
 
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Id == request.Id && (_currentUser.Role == "Admin" || u.Id == _currentUser.UserId), cancellationToken)
+                .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
                 ?? throw new KeyNotFoundException("User not found");
 
-            var normalizedEmail = request.Email.Trim().ToLower();
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
             var emailExists = await _dbContext.Users
                 .AnyAsync(u => u.Email == normalizedEmail && u.Id != request.Id, cancellationToken);
 
             if (emailExists)
-                throw new Exception("Email is already in use");
+                throw new InvalidOperationException("Email is already in use");
 
             user.UpdateProfile(request.FirstName, request.LastName, normalizedEmail);
 

@@ -21,11 +21,21 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateProfile
 
         public async Task<UserDto> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
         {
+            if (_currentUser.UserId == Guid.Empty)
+                throw new UnauthorizedAccessException("User not authenticated");
+
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == _currentUser.UserId, cancellationToken)
                 ?? throw new Exception("User not found");
 
-            user.UpdateProfile(request.FirstName, request.LastName, request.PhoneNumber);
+            if (user.IsDeleted)
+                throw new UnauthorizedAccessException("User is inactive");
+
+            var firstName = request.FirstName.Trim();
+            var lastName = request.LastName.Trim();
+            var phone = request.PhoneNumber.Trim();
+
+            user.UpdateProfile(firstName, lastName, phone);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
