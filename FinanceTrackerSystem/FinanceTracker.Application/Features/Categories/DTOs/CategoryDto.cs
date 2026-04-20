@@ -9,5 +9,6 @@ namespace FinanceTracker.Application.Features.Categories.DTOs
         public Guid UserId { get; init; }
         public string Name { get; init; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public string Icon { get; init; } = string.Empty;
     }
 }

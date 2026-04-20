@@ -14,12 +14,26 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(100)
             .IsRequired();
 
+        entity.Property(c => c.Icon)
+            .HasMaxLength(50)
+            .IsRequired();
+
         entity.Property(c => c.Type)
             .IsRequired();
+
+        entity.Property(c => c.IsDeleted)
+            .IsRequired();
+
+        // 🔥 evita duplicados por usuario/global
+        entity.HasIndex(c => new { c.Name, c.UserId })
+            .IsUnique();
 
         entity.HasOne(c => c.User)
             .WithMany(u => u.Categories)
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // 🔥 soft delete automático
+        entity.HasQueryFilter(c => !c.IsDeleted);
     }
 }

@@ -20,6 +20,6 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         entity.HasOne(a => a.User)
             .WithMany(u => u.Accounts)
             .HasForeignKey(a => a.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

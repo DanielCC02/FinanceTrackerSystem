@@ -9,11 +9,14 @@ namespace FinanceTracker.Application.Features.Categories.Validators
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Category name is required")
-                .MaximumLength(50).WithMessage("Category name cannot exceed 50 characters");
-
+                .MaximumLength(100);
 
             RuleFor(x => x.Type)
-                .IsInEnum().WithMessage("Invalid category type");
+                .IsInEnum();
+
+            RuleFor(x => x.Icon)
+                .MaximumLength(50)
+                .When(x => x.Icon != null);
         }
     }
 }
