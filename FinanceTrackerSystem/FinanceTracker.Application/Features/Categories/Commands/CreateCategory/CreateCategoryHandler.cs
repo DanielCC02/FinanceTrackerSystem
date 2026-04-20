@@ -22,10 +22,21 @@ namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
         }
 
         public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
-        {            
+        {
+            var name = request.Name.Trim();
+
+            var exists = await _dbContext.Categories
+                .AnyAsync(c => c.UserId == _currentUser.UserId
+                            && c.Name == name
+                            && c.Type == request.Type,
+                          cancellationToken);
+
+            if (exists)
+                throw new InvalidOperationException("Category already exists");
+
             var category = new Category(
                 _currentUser.UserId,
-                request.Name,
+                name,
                 request.Type);
 
             _dbContext.Categories.Add(category);

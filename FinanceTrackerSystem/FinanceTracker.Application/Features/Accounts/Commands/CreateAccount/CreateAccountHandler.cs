@@ -22,9 +22,11 @@ namespace FinanceTracker.Application.Features.Accounts.Commands.CreateAccount
 
         public async Task<AccountDto> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
+            var name = request.Name.Trim();
+
             var account = new Account(
                 _currentUser.UserId,
-                request.Name,
+                name,
                 request.Type);
 
             _dbContext.Accounts.Add(account);
