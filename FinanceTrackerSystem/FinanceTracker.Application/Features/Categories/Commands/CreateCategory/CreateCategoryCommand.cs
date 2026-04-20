@@ -7,6 +7,8 @@ namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
     public record CreateCategoryCommand
     (
         string Name,
-        CategoryType Type
+        CategoryType Type,
+        string? Icon
+
     ) : IRequest<CategoryDto>;
 }

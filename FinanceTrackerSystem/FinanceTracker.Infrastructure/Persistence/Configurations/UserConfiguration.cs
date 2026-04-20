@@ -38,5 +38,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne(c => c.User)
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        entity.Property(u => u.IsDeleted)
+            .IsRequired();
+
+        entity.HasQueryFilter(u => !u.IsDeleted);
     }
 }

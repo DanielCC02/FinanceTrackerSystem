@@ -11,7 +11,7 @@ public class PasswordResetTokenConfiguration : IEntityTypeConfiguration<Password
         entity.HasKey(t => t.Id);
 
         entity.Property(t => t.Token)
-            .HasMaxLength(44)
+            .HasMaxLength(64)
             .IsRequired();
 
         entity.HasIndex(t => t.Token)

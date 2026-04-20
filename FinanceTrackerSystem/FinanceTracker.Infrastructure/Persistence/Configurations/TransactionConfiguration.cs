@@ -26,5 +26,10 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .WithMany(c => c.Transactions)
             .HasForeignKey(t => t.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        entity.Property(t => t.IsDeleted)
+            .IsRequired();
+
+        entity.HasQueryFilter(t => !t.IsDeleted);
     }
 }

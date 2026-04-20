@@ -11,7 +11,7 @@ public class Category : BaseEntity
 
     public CategoryType Type { get; private set; }
 
-    public string Icon { get; private set; } = default!;
+    public string Icon { get; private set; } = string.Empty;
 
     public User? User { get; private set; }
 
@@ -19,7 +19,7 @@ public class Category : BaseEntity
 
     private Category() { }
 
-    public Category(Guid userId, string name, CategoryType type, string? icon = null)
+    public Category(Guid? userId, string name, CategoryType type, string? icon = null)
     {
         Id = Guid.NewGuid();
         SetUserId(userId);

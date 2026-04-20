@@ -3,6 +3,7 @@ using FinanceTracker.Application.Features.Transactions.Commands.CreateTransactio
 using FinanceTracker.Application.Features.Users.Commands.CreateUser;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Infrastructure.Persistence;
+using FinanceTracker.Infrastructure.Persistence.Seed;
 using FinanceTracker.Infrastructure.Service.Email;
 using FinanceTracker.Infrastructure.Service.Security.JWT;
 using FinanceTracker.Infrastructure.Service.Security.Password;
@@ -14,6 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +39,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddFluentValidationAutoValidation();
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommand>();
+builder.Services.AddValidatorsFromAssembly(typeof(CreateUserCommand).Assembly);
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -126,6 +129,8 @@ builder.Services.AddMediatR(cfg =>
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -134,7 +139,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<ExceptionMiddleware>();
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<FinanceDbContext>();
+
+    await context.Database.MigrateAsync(); 
+
+    await CategorySeeder.SeedAsync(context);
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
