@@ -22,9 +22,20 @@ namespace FinanceTracker.Application.Features.Categories.Commands.UpdateCategory
 
         public async Task<CategoryDto> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
+            var name = request.Name.Trim();
+
             var category = await _dbContext.Categories
                 .FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == _currentUser.UserId, cancellationToken)
                 ?? throw new KeyNotFoundException("Category not found");
+
+            var exists = await _dbContext.Categories
+                .AnyAsync(c => c.UserId == _currentUser.UserId
+                            && c.Name == name
+                            && c.Type == request.Type,
+                          cancellationToken);
+
+            if (exists)
+                throw new InvalidOperationException("Category already exists");
 
             category.Update(request.Name, request.Type);
 

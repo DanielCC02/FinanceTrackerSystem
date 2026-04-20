@@ -21,11 +21,13 @@ namespace FinanceTracker.Application.Features.Accounts.Commands.UpdateAccount
 
         public async Task<AccountDto> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
         {
+            var name = request.Name.Trim();
+
             var account = await _dbContext.Accounts
                 .FirstOrDefaultAsync(a => a.Id == request.Id && a.UserId == _currentUser.UserId, cancellationToken)
                 ?? throw new KeyNotFoundException("Account not found");
             
-            account.Update(request.Name, request.Type);
+            account.Update(name, request.Type);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
