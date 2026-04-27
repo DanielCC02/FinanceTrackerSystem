@@ -9,7 +9,7 @@ namespace FinanceTracker.Application.Features.Categories.Commands.UpdateCategory
     (
         Guid Id,
         string Name,
-        CategoryType Type,
-        string? Icon
+        string? Icon,
+        TransactionType? SuggestedType
     ) : IRequest<CategoryDto>;
 }

@@ -9,7 +9,7 @@ public class Category : BaseEntity
 
     public string Name { get; private set; } = string.Empty;
 
-    public CategoryType Type { get; private set; }
+    public TransactionType? SuggestedType { get; private set; }
 
     public string Icon { get; private set; } = string.Empty;
 
@@ -19,21 +19,21 @@ public class Category : BaseEntity
 
     private Category() { }
 
-    public Category(Guid? userId, string name, CategoryType type, string? icon = null)
+    public Category(Guid? userId, string name, string? icon = null, TransactionType? suggestedType = null)
     {
         Id = Guid.NewGuid();
         SetUserId(userId);
         SetName(name);
-        SetType(type);
-        SetIcon(icon, type);
+        SetIcon(icon);
+        SetSuggestedType(suggestedType);
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void Update(string name, CategoryType type, string? icon = null)
+    public void Update(string name, string? icon = null, TransactionType? suggestedType = null)
     {
         SetName(name);
-        SetType(type);
-        SetIcon(icon, type);
+        SetIcon(icon);
+        SetSuggestedType(suggestedType);
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -54,27 +54,30 @@ public class Category : BaseEntity
         UserId = userId;
     }
 
-    private void SetName (String name) { 
+    private void SetName(string name)
+    {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be empty");
-        Name = name;
+
+        Name = name.Trim();
     }
 
-    private void SetType(CategoryType type)
-    {
-        if (!Enum.IsDefined(typeof(CategoryType), type))
-            throw new ArgumentException("Invalid category type");
-        Type = type;
-    }
-
-    private void SetIcon(string? icon, CategoryType type)
+    private void SetIcon(string? icon)
     {
         if (string.IsNullOrWhiteSpace(icon))
         {
-            Icon = type == CategoryType.Expense ? "expense" : "income";
+            Icon = "default";
             return;
         }
 
         Icon = icon.Trim().ToLower();
+    }
+
+    private void SetSuggestedType(TransactionType? type)
+    {
+        if (type.HasValue && !Enum.IsDefined(typeof(TransactionType), type.Value))
+            throw new ArgumentException("Invalid suggested type");
+
+        SuggestedType = type;
     }
 }

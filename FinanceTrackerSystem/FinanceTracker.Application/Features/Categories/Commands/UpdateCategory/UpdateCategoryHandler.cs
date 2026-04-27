@@ -31,18 +31,20 @@ namespace FinanceTracker.Application.Features.Categories.Commands.UpdateCategory
                     cancellationToken)
                 ?? throw new KeyNotFoundException("Category not found");
 
-            var exists = await _dbContext.Categories
+            if (category.Name != name)
+            {
+                var exists = await _dbContext.Categories
                 .AnyAsync(c =>
-                    c.Id != request.Id && 
+                    c.Id != request.Id &&
                     c.Name == name &&
-                    c.Type == request.Type &&
                     (c.UserId == _currentUser.UserId || c.UserId == null),
                     cancellationToken);
 
-            if (exists)
-                throw new InvalidOperationException("Category already exists");
+                if (exists)
+                    throw new InvalidOperationException("Category already exists");
+            }
 
-            category.Update(name, request.Type, request.Icon);
+            category.Update(name, request.Icon, request.SuggestedType);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
