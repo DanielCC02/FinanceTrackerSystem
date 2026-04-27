@@ -22,8 +22,21 @@ namespace FinanceTracker.Application.Features.Categories.Queries.GetCategories
 
         public async Task<List<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
-            return await _dbContext.Categories
-                .Where(c => c.UserId == _currentUser.UserId)
+            var query = _dbContext.Categories
+                .Where(c =>
+                    c.UserId == _currentUser.UserId ||
+                    c.UserId == null);
+
+            if (request.Type.HasValue)
+            {
+                query = query.Where(c =>
+                    c.SuggestedType == null ||
+                    c.SuggestedType == request.Type);
+            }
+
+            return await query
+                .OrderByDescending(c => c.UserId == null) 
+                .ThenBy(c => c.Name)
                 .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
         }

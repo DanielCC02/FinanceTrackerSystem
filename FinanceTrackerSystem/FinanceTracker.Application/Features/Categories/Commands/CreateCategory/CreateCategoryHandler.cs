@@ -28,7 +28,6 @@ namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
             var exists = await _dbContext.Categories
                 .AnyAsync(c =>
                     c.Name == name &&
-                    c.Type == request.Type &&
                     (c.UserId == _currentUser.UserId || c.UserId == null),
                     cancellationToken);
 
@@ -38,8 +37,8 @@ namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
             var category = new Category(
                 _currentUser.UserId,
                 name,
-                request.Type,
-                request.Icon
+                request.Icon,
+                request.SuggestedType
             );
 
             _dbContext.Categories.Add(category);

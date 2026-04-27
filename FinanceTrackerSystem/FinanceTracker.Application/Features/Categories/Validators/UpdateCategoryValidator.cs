@@ -14,12 +14,13 @@ namespace FinanceTracker.Application.Features.Categories.Validators
                 .NotEmpty()
                 .MaximumLength(100);
 
-            RuleFor(x => x.Type)
-                .IsInEnum();
-
             RuleFor(x => x.Icon)
                 .MaximumLength(50)
                 .When(x => x.Icon != null);
+
+            RuleFor(x => x.SuggestedType)
+            .IsInEnum()
+            .When(x => x.SuggestedType.HasValue);
         }
     }
 }
