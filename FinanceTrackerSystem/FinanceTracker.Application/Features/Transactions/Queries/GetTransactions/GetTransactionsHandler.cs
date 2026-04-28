@@ -11,16 +11,22 @@ namespace FinanceTracker.Application.Features.Transactions.Queries.GetTransactio
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
-        public GetTransactionsHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public GetTransactionsHandler(
+            IApplicationDbContext dbContext,
+            IMapper mapper,
+            ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<List<TransactionDto>> Handle(GetTransactionsQuery request, CancellationToken cancellationToken)
         {
             return await _dbContext.Transactions
+                .Where(t => t.Account.UserId == _currentUser.UserId)
                 .ProjectTo<TransactionDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
         }

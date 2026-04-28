@@ -4,6 +4,7 @@ using FinanceTracker.Application.Features.Categories.Commands.UpdateCategory;
 using FinanceTracker.Application.Features.Categories.DTOs;
 using FinanceTracker.Application.Features.Categories.Queries.GetCategories;
 using FinanceTracker.Application.Features.Categories.Queries.GetCategoryById;
+using FinanceTracker.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,9 +31,12 @@ namespace FinanceTracker.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CategoryDto>>> GetAll()
+        public async Task<ActionResult<List<CategoryDto>>> GetAll([FromQuery] TransactionType? type)
         {
-            var categories = await _mediator.Send(new GetCategoriesQuery());
+            var categories = await _mediator.Send(
+                new GetCategoriesQuery(type)
+            );
+
             return Ok(categories);
         }
 

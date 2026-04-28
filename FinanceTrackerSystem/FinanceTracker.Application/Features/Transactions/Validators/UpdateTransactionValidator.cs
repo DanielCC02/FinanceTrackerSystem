@@ -6,19 +6,26 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
     public UpdateTransactionValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty();
+            .NotEmpty().WithMessage("Transaction ID is required");
 
         RuleFor(x => x.Amount)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .WithMessage("Amount must be greater than zero");
 
         RuleFor(x => x.Type)
-            .IsInEnum();
+            .IsInEnum()
+            .WithMessage("Invalid transaction type");
 
         RuleFor(x => x.Description)
             .MaximumLength(200)
-            .When(x => x.Description != null);
+            .WithMessage("Description cannot exceed 200 characters");
 
         RuleFor(x => x.Date)
-            .LessThanOrEqualTo(DateTime.UtcNow);
+            .LessThanOrEqualTo(DateTime.UtcNow)
+            .WithMessage("Date cannot be in the future");
+
+        RuleFor(x => x.CategoryId)
+            .Must(id => id == null || id != Guid.Empty)
+            .WithMessage("Invalid CategoryId");
     }
 }

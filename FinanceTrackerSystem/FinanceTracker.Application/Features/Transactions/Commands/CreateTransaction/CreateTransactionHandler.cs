@@ -23,10 +23,16 @@ namespace FinanceTracker.Application.Features.Transactions.Commands.CreateTransa
 
         public async Task<TransactionDto> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
+            // 🔥 1. Validar account (y ownership)
             var account = await _dbContext.Accounts
-                .FirstOrDefaultAsync(a => a.Id == request.AccountId && a.UserId == _currentUser.UserId, cancellationToken)
-                ?? throw new KeyNotFoundException("Account not found");            
+                .FirstOrDefaultAsync(a =>
+                    a.Id == request.AccountId &&
+                    a.UserId == _currentUser.UserId,
+                    cancellationToken)
+                ?? throw new KeyNotFoundException("Account not found");
 
+
+            // 🔥 2. Validar categoría (si viene)
             if (request.CategoryId.HasValue)
             {
                 var category = await _dbContext.Categories
@@ -36,10 +42,16 @@ namespace FinanceTracker.Application.Features.Transactions.Commands.CreateTransa
                         cancellationToken)
                     ?? throw new KeyNotFoundException("Category not found");
 
-                if (category.Type != request.Type)
-                    throw new InvalidOperationException("Category type does not match transaction type");
-            }            
+                // 🔥 3. Validación PRO (coherencia tipo)
+                if (category.SuggestedType.HasValue &&
+                    category.SuggestedType != request.Type)
+                {
+                    throw new InvalidOperationException(
+                        $"Category is for {category.SuggestedType}, not {request.Type}");
+                }
+            }
 
+            // 🔥 4. Crear transacción
             var transaction = new Transaction(
                 request.AccountId,
                 request.CategoryId,
