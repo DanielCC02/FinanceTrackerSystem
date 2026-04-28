@@ -18,22 +18,22 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(50)
             .IsRequired();
 
-        entity.Property(c => c.Type)
-            .IsRequired();
+        // 🔥 NUEVO (correcto)
+        entity.Property(c => c.SuggestedType)
+            .IsRequired(false);
 
         entity.Property(c => c.IsDeleted)
             .IsRequired();
-
-        // 🔥 evita duplicados por usuario/global
-        entity.HasIndex(c => new { c.Name, c.UserId })
-            .IsUnique();
 
         entity.HasOne(c => c.User)
             .WithMany(u => u.Categories)
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // 🔥 soft delete automático
+        // 🔥 SOFT DELETE GLOBAL
         entity.HasQueryFilter(c => !c.IsDeleted);
+
+        // 🔥 ÍNDICE (opcional mantener)
+        entity.HasIndex(c => new { c.Name, c.UserId });
     }
 }

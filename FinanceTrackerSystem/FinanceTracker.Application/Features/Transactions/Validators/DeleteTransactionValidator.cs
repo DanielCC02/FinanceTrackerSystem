@@ -1,14 +1,14 @@
-﻿using FluentValidation;
+﻿namespace FinanceTracker.Application.Features.Transactions.Validators;
+
+using FluentValidation;
 using FinanceTracker.Application.Features.Transactions.Commands.DeleteTransaction;
 
-namespace FinanceTracker.Application.Features.Transactions.Validators
+public class DeleteTransactionValidator : AbstractValidator<DeleteTransactionCommand>
 {
-    public class DeleteTransactionValidator : AbstractValidator<DeleteTransactionCommand>
+    public DeleteTransactionValidator()
     {
-        public DeleteTransactionValidator()
-        {
-            RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Transaction ID is required");
-        }
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Transaction ID is required");
     }
 }

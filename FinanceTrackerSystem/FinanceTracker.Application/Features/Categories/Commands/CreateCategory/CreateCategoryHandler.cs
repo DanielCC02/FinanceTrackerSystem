@@ -37,8 +37,8 @@ namespace FinanceTracker.Application.Features.Categories.Commands.CreateCategory
             var category = new Category(
                 _currentUser.UserId,
                 name,
-                request.Icon,
-                request.SuggestedType
+                request.SuggestedType,
+                request.Icon
             );
 
             _dbContext.Categories.Add(category);

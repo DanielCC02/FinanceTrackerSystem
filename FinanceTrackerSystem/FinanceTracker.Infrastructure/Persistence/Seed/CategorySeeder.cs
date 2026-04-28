@@ -1,5 +1,4 @@
-﻿using FinanceTracker.Application.Interfaces;
-using FinanceTracker.Domain.Entities;
+﻿using FinanceTracker.Domain.Entities;
 using FinanceTracker.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,33 +8,39 @@ public static class CategorySeeder
 {
     public static async Task SeedAsync(FinanceDbContext context)
     {
+        // 🔥 1. Traer todas las categorías globales existentes (1 sola query)
+        var existingCategories = await context.Categories
+            .Where(c => c.UserId == null)
+            .Select(c => new { c.Name, c.SuggestedType })
+            .ToListAsync();
+
+        // 🔥 2. Definir categorías por defecto
         var defaultCategories = new List<Category>
         {
-            new Category(null, "food", CategoryType.Expense, "food"),
-            new Category(null, "transport", CategoryType.Expense, "car"),
-            new Category(null, "health", CategoryType.Expense, "heart"),
-            new Category(null, "entertainment", CategoryType.Expense, "gamepad"),
-            new Category(null, "shopping", CategoryType.Expense, "shopping-bag"),
-            new Category(null, "bills", CategoryType.Expense, "file-invoice"),
+            new Category(null, "food", TransactionType.Expense, "food"),
+            new Category(null, "transport", TransactionType.Expense, "car"),
+            new Category(null, "health", TransactionType.Expense, "heart"),
+            new Category(null, "entertainment", TransactionType.Expense, "gamepad"),
+            new Category(null, "shopping", TransactionType.Expense, "shopping-bag"),
+            new Category(null, "bills", TransactionType.Expense, "file-invoice"),
 
-            new Category(null, "salary", CategoryType.Income, "money"),
-            new Category(null, "freelance", CategoryType.Income, "laptop"),
-            new Category(null, "investments", CategoryType.Income, "chart-line")
+            new Category(null, "salary", TransactionType.Income, "money"),
+            new Category(null, "freelance", TransactionType.Income, "laptop"),
+            new Category(null, "investments", TransactionType.Income, "chart-line")
         };
 
-        foreach (var category in defaultCategories)
+        // 🔥 3. Filtrar solo las que NO existen (en memoria)
+        var categoriesToInsert = defaultCategories
+            .Where(dc => !existingCategories.Any(ec =>
+                ec.Name == dc.Name &&
+                ec.SuggestedType == dc.SuggestedType))
+            .ToList();
+
+        // 🔥 4. Insertar en batch (si hay nuevas)
+        if (categoriesToInsert.Any())
         {
-            var exists = await context.Categories.AnyAsync(c =>
-                c.UserId == null &&
-                c.Name == category.Name &&
-                c.Type == category.Type);
-
-            if (!exists)
-            {
-                context.Categories.Add(category);
-            }
+            await context.Categories.AddRangeAsync(categoriesToInsert);
+            await context.SaveChangesAsync();
         }
-
-        await context.SaveChangesAsync();
     }
 }

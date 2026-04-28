@@ -19,7 +19,7 @@ public class Category : BaseEntity
 
     private Category() { }
 
-    public Category(Guid? userId, string name, string? icon = null, TransactionType? suggestedType = null)
+    public Category(Guid? userId, string name, TransactionType? suggestedType = null, string? icon = null)
     {
         Id = Guid.NewGuid();
         SetUserId(userId);

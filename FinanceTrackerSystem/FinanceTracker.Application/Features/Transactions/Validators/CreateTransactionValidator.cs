@@ -1,5 +1,7 @@
-﻿using FinanceTracker.Application.Features.Transactions.Commands.CreateTransaction;
+﻿namespace FinanceTracker.Application.Features.Transactions.Validators;
+
 using FluentValidation;
+using FinanceTracker.Application.Features.Transactions.Commands.CreateTransaction;
 
 public class CreateTransactionValidator : AbstractValidator<CreateTransactionCommand>
 {
@@ -9,17 +11,24 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionCom
             .NotEmpty().WithMessage("Account is required");
 
         RuleFor(x => x.Amount)
-            .GreaterThan(0).WithMessage("Amount must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("Amount must be greater than 0");
 
         RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("Invalid transaction type");
+            .IsInEnum()
+            .WithMessage("Invalid transaction type");
 
         RuleFor(x => x.Description)
             .MaximumLength(200)
-            .When(x => x.Description != null);
+            .WithMessage("Description cannot exceed 200 characters");
 
         RuleFor(x => x.Date)
-            .LessThanOrEqualTo(DateTime.UtcNow)
+            .Must(date => date <= DateTime.UtcNow)
             .WithMessage("Date cannot be in the future");
+
+        RuleFor(x => x.CategoryId)
+            .NotEqual(Guid.Empty)
+            .When(x => x.CategoryId.HasValue)
+            .WithMessage("Invalid CategoryId");
     }
 }
