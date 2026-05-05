@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceTracker.Application.Features.Users.Queries.GetMyProfile
 {
-    public class GetMyProfileHandler : IRequestHandler<GetMyProfileQuery, UserDto>
+    public class GetMyProfileHandler : IRequestHandler<GetMyProfileQuery, UserDetailsDto>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -21,15 +21,15 @@ namespace FinanceTracker.Application.Features.Users.Queries.GetMyProfile
             _currentUser = currentUser;
         }
 
-        public async Task<UserDto> Handle(GetMyProfileQuery request, CancellationToken cancellationToken)
+        public async Task<UserDetailsDto> Handle(GetMyProfileQuery request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.Users
                 .Where(u => u.Id == _currentUser.UserId)
-                .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<UserDetailsDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new KeyNotFoundException("User not found.");
 
-            return _mapper.Map<UserDto>(user);
+            return user;
         }
     }
 }

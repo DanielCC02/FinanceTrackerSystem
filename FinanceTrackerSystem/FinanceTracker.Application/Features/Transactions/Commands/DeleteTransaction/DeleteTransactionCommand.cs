@@ -2,8 +2,9 @@
 
 namespace FinanceTracker.Application.Features.Transactions.Commands.DeleteTransaction
 {
-     public record DeleteTransactionCommand
-     (
-        Guid Id
-     ) : IRequest<Unit>;
+    public record DeleteTransactionCommand
+    (
+       Guid AccountId,
+       Guid Id
+    ) : IRequest<Unit>;
 }

@@ -47,16 +47,13 @@ namespace FinanceTracker.Application.Features.Auth.Commands.ForgotPassword
 
             //Email sending logic
 
-            var resetLink = $"https://yourapp.com/reset-password?token={Uri.EscapeDataString(rawToken)}";
+            var resetLink = $"https://app.vaultly.com/reset-password?token={Uri.EscapeDataString(rawToken)}";
 
-            var htmlContent = $@"
-                <h2>Password Reset</h2>
-                <p>Click the link below to reset your password:</p>
-                <a href='{resetLink}'>Reset your password</a>
-                <p>This link expires in 15 minutes. If you did not request a password reset, please ignore this email.</p>
-            ";
-
-            await _emailService.SendAsync(user.Email, "Reset your password", htmlContent);
+            var html = await _emailService.LoadTemplateAsync("ResetPassword.html", new Dictionary<string, string>
+            {
+                { "resetLink", resetLink }
+            });
+            await _emailService.SendAsync(user.Email, "Reset your password · Vaultly", html);
 
             return Unit.Value;
         }

@@ -6,5 +6,5 @@ namespace FinanceTracker.Application.Features.Users.Queries.GetMyProfile
 {
     public record GetMyProfileQuery
     (
-    ) : IRequest<UserDto>;
+    ) : IRequest<UserDetailsDto>;
 }

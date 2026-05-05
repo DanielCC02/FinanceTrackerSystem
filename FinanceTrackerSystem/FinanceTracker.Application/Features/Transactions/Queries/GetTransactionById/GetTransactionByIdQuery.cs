@@ -5,6 +5,7 @@ namespace FinanceTracker.Application.Features.Transactions.Queries.GetTransactio
 {
     public record GetTransactionByIdQuery
     (
+        Guid AccountId,
         Guid Id
     ) : IRequest<TransactionDto>;
 }

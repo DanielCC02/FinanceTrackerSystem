@@ -18,6 +18,8 @@ public class User : BaseEntity
     public ICollection<Category> Categories { get; private set; } = new List<Category>();
     public ICollection<PasswordResetToken> PasswordResetTokens { get; private set; } = new List<PasswordResetToken>();
 
+    public ICollection<EmailConfirmationToken> EmailConfirmationTokens { get; private set; } = new List<EmailConfirmationToken>();
+
     private User() { }
 
     public User(string firstName, string lastName, string email, string passwordHash)
@@ -30,6 +32,15 @@ public class User : BaseEntity
         SetPasswordHash(passwordHash);
         EmailConfirmed = false;
         CreatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateByAdmin(string firstName, string lastName, string email, string? phoneNumber = null)
+    {
+        SetFirstName(firstName);
+        SetLastName(lastName);
+        SetEmail(email);
+        SetPhone(phoneNumber);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateProfile(string firstName, string lastName, string phoneNumber)

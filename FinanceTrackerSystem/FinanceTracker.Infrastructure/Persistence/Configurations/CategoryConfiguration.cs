@@ -30,9 +30,6 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // 🔥 SOFT DELETE GLOBAL
-        entity.HasQueryFilter(c => !c.IsDeleted);
-
         // 🔥 ÍNDICE (opcional mantener)
         entity.HasIndex(c => new { c.Name, c.UserId });
     }

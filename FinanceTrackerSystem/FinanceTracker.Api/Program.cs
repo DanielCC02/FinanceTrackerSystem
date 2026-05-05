@@ -1,5 +1,7 @@
 using FinanceTracker.API.Middleware;
-using FinanceTracker.Application.Features.Transactions.Commands.CreateTransaction;
+using FinanceTracker.Application;
+using FinanceTracker.Application.Common.Behaviors;
+using FinanceTracker.Application.Features.Auth.Commands.ForgotPassword;
 using FinanceTracker.Application.Features.Users.Commands.CreateUser;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Infrastructure.Persistence;
@@ -10,6 +12,7 @@ using FinanceTracker.Infrastructure.Service.Security.Password;
 using FinanceTracker.Infrastructure.Service.Security.RoleSecurity;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,8 +66,6 @@ builder.Services.AddScoped<IApplicationDbContext, FinanceDbContext>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-
-
 
 builder.Services.Configure<ResendSettings>(
     builder.Configuration.GetSection("Resend"));
@@ -120,7 +121,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(CreateTransactionCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly);
+    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); 
 });
 
 // =========================
@@ -139,6 +141,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<FinanceDbContext>();
@@ -147,9 +152,6 @@ using (var scope = app.Services.CreateScope())
 
     await CategorySeeder.SeedAsync(context);
 }
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

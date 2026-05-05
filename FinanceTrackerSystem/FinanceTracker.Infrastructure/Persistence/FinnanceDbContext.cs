@@ -17,6 +17,7 @@ public class FinanceDbContext : DbContext, IApplicationDbContext
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<EmailConfirmationToken> EmailConfirmationTokens => Set<EmailConfirmationToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -19,6 +19,7 @@ namespace FinanceTracker.API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/v1/users")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -27,6 +28,11 @@ namespace FinanceTracker.API.Controllers
         {
             _mediator = mediator;
         }
+
+
+        // =========================
+        // CREATE USER
+        // =========================
 
         /// <summary>
         /// Registers a new user.
@@ -40,6 +46,10 @@ namespace FinanceTracker.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
+        // =========================
+        // GET USERS (ADMIN)
+        // =========================
+
         /// <summary>
         /// Gets all users (Admin only).
         /// </summary>
@@ -52,45 +62,63 @@ namespace FinanceTracker.API.Controllers
             return Ok(users);
         }
 
+        // =========================
+        // GET USER BY ID (ADMIN)
+        // =========================
+
         /// <summary>
-        /// Gets a user by ID.
+        /// Gets a user by ID (Admin only).
         /// </summary>
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [ProducesResponseType(typeof(UserDetailsDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserDetailsDto>> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetUserByIdQuery(id));
             return Ok(result);
         }
 
+        // =========================
+        // GET MY PROFILE
+        // =========================
+
         /// <summary>
         /// Gets the current user's profile.
         /// </summary>
-        [Authorize]
         [HttpGet("me")]
-        public async Task<ActionResult<UserDto>> GetMyProfile()
+        [ProducesResponseType(typeof(UserDetailsDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserDetailsDto>> GetMyProfile()
         {
             var result = await _mediator.Send(new GetMyProfileQuery());
             return Ok(result);
         }
 
+        // =========================
+        // UPDATE MY PROFILE
+        // =========================
+
         /// <summary>
         /// Updates the current user's profile.
         /// </summary>
-        [Authorize]
         [HttpPut("me")]
-        public async Task<ActionResult<UserDto>> UpdateProfile([FromBody] UpdateProfileCommand command)
+        [ProducesResponseType(typeof(UserDetailsDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserDetailsDto>> UpdateProfile([FromBody] UpdateProfileCommand command)
         {
             var updatedUser = await _mediator.Send(command);
             return Ok(updatedUser);
         }
+
+        // =========================
+        // UPDATE USER (ADMIN)
+        // =========================
 
         /// <summary>
         /// Updates a user (Admin only).
         /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserDto>> UpdateUser(Guid id, [FromBody] UpdateUserCommand command)
+        [ProducesResponseType(typeof(UserDetailsDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserDetailsDto>> UpdateUser(Guid id, [FromBody] UpdateUserCommand command)
         {
             if (id != command.Id)
                 return BadRequest("ID mismatch");
@@ -99,33 +127,46 @@ namespace FinanceTracker.API.Controllers
             return Ok(updatedUser);
         }
 
+        // =========================
+        // UPDATE PASSWORD
+        // =========================
+
         /// <summary>
         /// Updates the current user's password.
         /// </summary>
-        [Authorize]
         [HttpPut("me/password")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordCommand command)
         {
             await _mediator.Send(command);
             return NoContent();
         }
 
+        // =========================
+        // DELETE USER (ADMIN)
+        // =========================
+
         /// <summary>
         /// Deletes a user (Admin only).
         /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             await _mediator.Send(new DeleteUserCommand(id));
             return NoContent();
         }
 
+        // =========================
+        // DEACTIVATE MY ACCOUNT 
+        // =========================
+
         /// <summary>
         /// Deactivates the current user's account.
         /// </summary>
-        [Authorize]
         [HttpDelete("me")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeactivateMyAccount([FromBody] DeactivateMyAccountCommand command)
         {
             await _mediator.Send(command);

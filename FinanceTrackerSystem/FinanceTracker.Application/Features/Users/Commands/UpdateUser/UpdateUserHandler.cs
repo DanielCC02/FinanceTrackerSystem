@@ -34,15 +34,19 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUser
                 .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
                 ?? throw new KeyNotFoundException("User not found");
 
-            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+            var normalizedEmail = request.Email?.Trim().ToLowerInvariant();
+            
+            if (normalizedEmail != null)
+            {
+                var emailExists = await _dbContext.Users
+                    .AnyAsync(u => u.Email == normalizedEmail && u.Id != request.Id, cancellationToken);
 
-            var emailExists = await _dbContext.Users
-                .AnyAsync(u => u.Email == normalizedEmail && u.Id != request.Id, cancellationToken);
+                if (emailExists)
+                    throw new InvalidOperationException("Email is already in use");
 
-            if (emailExists)
-                throw new InvalidOperationException("Email is already in use");
+            }
 
-            user.UpdateProfile(request.FirstName, request.LastName, normalizedEmail);
+            user.UpdateByAdmin(request.FirstName, request.LastName, normalizedEmail!, request.PhoneNumber);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
