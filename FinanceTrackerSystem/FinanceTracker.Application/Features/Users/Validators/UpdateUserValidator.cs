@@ -21,6 +21,11 @@ namespace FinanceTracker.Application.Features.Users.Validators
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required")
                 .EmailAddress().WithMessage("Invalid email format");
+
+            RuleFor(x => x.PhoneNumber)
+                .Matches(@"^\+?[0-9]{8,15}$")
+                .WithMessage("Invalid phone number format")
+                .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
         }
     }
 }

@@ -5,30 +5,25 @@ using FinanceTracker.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceTracker.Application.Features.Transactions.Queries.GetTransactions
+namespace FinanceTracker.Application.Features.Transactions.Queries.GetAllTransactions
 {
-    public class GetTransactionsHandler : IRequestHandler<GetTransactionsQuery, List<TransactionDto>>
+    public class GetAllTransactionsHandler : IRequestHandler<GetAllTransactionsQuery, List<TransactionDto>>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUser;
 
-        public GetTransactionsHandler(
-            IApplicationDbContext dbContext,
-            IMapper mapper,
-            ICurrentUserService currentUser)
+        public GetAllTransactionsHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUser)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _currentUser = currentUser;
         }
 
-        public async Task<List<TransactionDto>> Handle(GetTransactionsQuery request, CancellationToken cancellationToken)
+        public async Task<List<TransactionDto>> Handle(GetAllTransactionsQuery request, CancellationToken cancellationToken)
         {
             var query = _dbContext.Transactions
-                .Where(t =>
-                    t.AccountId == request.AccountId &&
-                    t.Account!.UserId == _currentUser.UserId);
+                .Where(t => t.Account!.UserId == _currentUser.UserId);
 
             if (request.Type.HasValue)
                 query = query.Where(t => t.Type == request.Type);

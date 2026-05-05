@@ -7,6 +7,7 @@ namespace FinanceTracker.Application.Features.Transactions.Commands.UpdateTransa
     public record UpdateTransactionCommand
     (
         Guid Id,
+        Guid AccountId,
         Guid? CategoryId,
         decimal Amount,
         TransactionType Type,

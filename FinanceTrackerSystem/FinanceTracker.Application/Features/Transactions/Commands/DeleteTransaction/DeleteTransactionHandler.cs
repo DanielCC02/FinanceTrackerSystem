@@ -18,12 +18,13 @@ namespace FinanceTracker.Application.Features.Transactions.Commands.DeleteTransa
         public async Task<Unit> Handle(DeleteTransactionCommand request, CancellationToken cancellationToken)
         {
             var transaction = await _dbContext.Transactions
-           .Include(t => t.Account)
-           .FirstOrDefaultAsync(t =>
-               t.Id == request.Id &&
-               t.Account!.UserId == _currentUser.UserId,
-               cancellationToken)
-           ?? throw new KeyNotFoundException("Transaction not found");
+               .Include(t => t.Account)
+               .FirstOrDefaultAsync(t =>
+                   t.Id == request.Id &&
+                   t.AccountId == request.AccountId &&
+                   t.Account!.UserId == _currentUser.UserId,
+                   cancellationToken)
+               ?? throw new KeyNotFoundException("Transaction not found");
 
             transaction.Delete();
             

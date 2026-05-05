@@ -8,7 +8,15 @@ namespace FinanceTracker.Application.Features.Users.Mapping
     {
         public UserProfile()
         {
-            CreateMap<User, UserDto>();
+            // 🔹 SIMPLE DTO
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.Name,
+                    opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
+
+            // 🔹 DETAILS DTO
+            CreateMap<User, UserDetailsDto>()
+                .ForMember(dest => dest.Role,
+                    opt => opt.MapFrom(src => src.Role.ToString()));
         }
     }
 }

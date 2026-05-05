@@ -33,6 +33,10 @@ namespace FinanceTracker.Application.Features.Auth.Commands.Login
             if (user == null || !valid || user.IsDeleted)
                 throw new KeyNotFoundException("Invalid credentials");
 
+            // Validar email confirmado
+            if (!user.EmailConfirmed)
+                throw new UnauthorizedAccessException("Please confirm your email before logging in");
+
             var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role.ToString());
 
             return new LoginResponseDto

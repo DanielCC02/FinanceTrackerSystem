@@ -11,10 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceTracker.API.Controllers
 {
     /// <summary>
-    /// Manages user accounts.
+    /// Manages bank accounts for the authenticated user.
     /// </summary>
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/accounts")]
     [Authorize]
     public class AccountsController : ControllerBase
     {
@@ -25,11 +25,13 @@ namespace FinanceTracker.API.Controllers
             _mediator = mediator;
         }
 
+        // =========================
+        // CREATE
+        // =========================
+
         /// <summary>
         /// Creates a new account for the authenticated user.
         /// </summary>
-        /// <param name="command">Account creation data</param>
-        /// <returns>The created account</returns>
         [HttpPost]
         [ProducesResponseType(typeof(AccountDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -39,6 +41,10 @@ namespace FinanceTracker.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
+        // =========================
+        // GET ALL
+        // =========================
+
         /// <summary>
         /// Gets all accounts of the authenticated user.
         /// </summary>
@@ -46,9 +52,13 @@ namespace FinanceTracker.API.Controllers
         [ProducesResponseType(typeof(List<AccountDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<List<AccountDto>>> GetAll()
         {
-            var accounts = await _mediator.Send(new GetAccountsQuery());
-            return Ok(accounts);
+            var result = await _mediator.Send(new GetAccountsQuery());
+            return Ok(result);
         }
+
+        // =========================
+        // GET BY ID
+        // =========================
 
         /// <summary>
         /// Gets an account by its ID.
@@ -58,35 +68,44 @@ namespace FinanceTracker.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AccountDto>> GetById(Guid id)
         {
-            var account = await _mediator.Send(new GetAccountByIdQuery(id));
-            return Ok(account);
+            var result = await _mediator.Send(new GetAccountByIdQuery(id));
+            return Ok(result);
         }
 
+        // =========================
+        // UPDATE
+        // =========================
+
         /// <summary>
-        /// Updates an existing account.
+        /// Updates an existing account of the authenticated user.
         /// </summary>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AccountDto>> Update(Guid id, [FromBody] UpdateAccountCommand command)
         {
             if (id != command.Id)
-                return BadRequest("ID mismatch");
+                return BadRequest(new { message = "ID mismatch" });
 
-            var updated = await _mediator.Send(command);
-            return Ok(updated);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
+        // =========================
+        // DELETE
+        // =========================
+
         /// <summary>
-        /// Deletes an account (soft delete).
+        /// Soft deletes an account and all its transactions.
         /// </summary>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _mediator.Send(new AccountDeleteCommand(id));
             return NoContent();
         }
-
     }
 }

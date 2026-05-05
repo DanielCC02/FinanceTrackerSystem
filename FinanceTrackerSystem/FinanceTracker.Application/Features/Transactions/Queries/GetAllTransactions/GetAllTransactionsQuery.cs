@@ -2,11 +2,10 @@
 using FinanceTracker.Domain.Enums;
 using MediatR;
 
-namespace FinanceTracker.Application.Features.Transactions.Queries.GetTransactions
+namespace FinanceTracker.Application.Features.Transactions.Queries.GetAllTransactions
 {
-    public record GetTransactionsQuery
+    public record GetAllTransactionsQuery
     (
-        Guid AccountId,      
         TransactionType? Type,
         DateTime? From,
         DateTime? To,

@@ -29,7 +29,5 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
         entity.Property(t => t.IsDeleted)
             .IsRequired();
-
-        entity.HasQueryFilter(t => !t.IsDeleted);
     }
 }

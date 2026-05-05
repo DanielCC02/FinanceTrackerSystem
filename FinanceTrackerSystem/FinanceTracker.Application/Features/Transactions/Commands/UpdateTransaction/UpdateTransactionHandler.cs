@@ -23,8 +23,10 @@ namespace FinanceTracker.Application.Features.Transactions.Commands.UpdateTransa
         {
             // 🔥 1. Traer transacción con validación de ownership
             var transaction = await _dbContext.Transactions
+                .Include(t => t.Account) // 👈 falta esto
                 .FirstOrDefaultAsync(t =>
                     t.Id == request.Id &&
+                    t.AccountId == request.AccountId &&
                     t.Account!.UserId == _currentUser.UserId,
                     cancellationToken)
                 ?? throw new KeyNotFoundException("Transaction not found");

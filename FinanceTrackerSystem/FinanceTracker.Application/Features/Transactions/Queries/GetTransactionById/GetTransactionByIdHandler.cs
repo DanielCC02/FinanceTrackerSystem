@@ -28,6 +28,7 @@ namespace FinanceTracker.Application.Features.Transactions.Queries.GetTransactio
             var transaction = await _dbContext.Transactions
                 .Where(t =>
                     t.Id == request.Id &&
+                    t.AccountId == request.AccountId &&
                     t.Account!.UserId == _currentUser.UserId)
                 .ProjectTo<TransactionDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken)

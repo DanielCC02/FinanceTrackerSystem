@@ -8,6 +8,7 @@ namespace FinanceTracker.Application.Features.Users.Commands.UpdateUser
         Guid Id,
         string FirstName,
         string LastName,
-        string Email
+        string Email,
+        string? PhoneNumber  
     ) : IRequest<UserDto>;
 }

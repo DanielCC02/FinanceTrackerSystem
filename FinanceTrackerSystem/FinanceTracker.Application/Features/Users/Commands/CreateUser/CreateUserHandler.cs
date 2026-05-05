@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FinanceTracker.Application.Features.Auth.Commands.SendEmailConfirmation;
 using FinanceTracker.Application.Features.Users.DTOs;
 using FinanceTracker.Application.Interfaces;
 using FinanceTracker.Domain.Entities;
@@ -11,16 +12,16 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
     public class CreateUserHandler : IRequestHandler<CreateUserCommand, UserDto>
     {
         private readonly IApplicationDbContext _dbContext;
-
         private readonly IPasswordHasher _passwordHasher;
-
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public CreateUserHandler(IApplicationDbContext dbContext, IPasswordHasher passwordHasher, IMapper mapper)
+        public CreateUserHandler(IApplicationDbContext dbContext, IPasswordHasher passwordHasher, IMapper mapper, IMediator mediator)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -46,6 +47,8 @@ namespace FinanceTracker.Application.Features.Users.Commands.CreateUser
 
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync(cancellationToken);
+
+            await _mediator.Send(new SendEmailConfirmationCommand(user.Id, user.Email), cancellationToken);
 
             return _mapper.Map<UserDto>(user);
         }

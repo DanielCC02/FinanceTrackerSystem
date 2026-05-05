@@ -29,7 +29,7 @@ namespace FinanceTracker.Application.Features.Accounts.Queries.GetAccountById
                 .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new KeyNotFoundException("Account not found.");
 
-            return _mapper.Map<AccountDto>(account);
+            return account;
         }
     }
 }
